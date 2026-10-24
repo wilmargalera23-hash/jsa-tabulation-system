@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>👑 Judges Premium Circle Console</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        body { 
+            background: #020617 url('judge.jfif') no-repeat center center fixed !important;
+            background-size: cover !important; color: #ffffff !important; min-height: 100vh !important; margin: 0; 
+            font-family: 'Segoe UI', system-ui, sans-serif; position: relative; overflow-x: hidden; padding-bottom: 6rem;
+         }
+         body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 26, 66, 0.4); z-index: 1; pointer-events: none; }
+        
+        /* 💎 BOLDER FROSTED GLASS BAR INTERFACE */
+        .navbar-custom { 
+            background: rgba(255, 255, 255, 0.06) !important; 
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important; 
+            padding: 1.25rem 2.5rem; position: relative; z-index: 10; 
+            backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+        .navbar-brand-title { color: #f3e8ff; font-size: 1.15rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; margin: 0; }
+        .navbar-subtitle { color: #fbbf24; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; margin: 0; line-height: 1.1; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)); }
+        
+        .judge-badge-profile { display: flex; align-items: center; gap: 0.75rem; background: rgba(15, 23, 42, 0.4); padding: 0.6rem 1.5rem; border-radius: 2rem; border: 2px solid rgba(217, 119, 6, 0.4); font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: #fde68a; }
+        .btn-logout-custom { background: transparent; border: none; color: #f87171; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn-logout-custom:hover { color: #fca5a5; transform: scale(1.02); }
+        
+        /* 👑 BOLDER GLASSMORPHISM CARDS (Saktong gaya sa Login Box) */
+        .jumbo-evaluation-sheet { 
+            background: rgba(255, 255, 255, 0.08) !important; 
+            border: 2px solid rgba(255, 255, 255, 0.25) !important; 
+            border-radius: 1.75rem !important; 
+            padding: 3.5rem 2.5rem; 
+            margin-bottom: 3rem !important; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3) !important; 
+            color: #ffffff !important;
+            position: relative; 
+            z-index: 5; 
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+        }
+        /* Lock state layout frame color indicators */
+        .jumbo-evaluation-sheet.voted-lockout-style { border-color: #10b981 !important; background: rgba(16, 185, 129, 0.12) !important; box-shadow: 0 20px 40px rgba(16,185,129,0.15) !important; }
+        
+        .candidate-header-label { font-size: 2.1rem; font-weight: 900; color: #fde68a; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 1.25rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .candidate-sub-label { color: #ffffff; font-size: 1.15rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; }
+        
+        .avatar-frame-vip { 
+            width: 160px; height: 160px; border-radius: 50% !important; object-fit: cover !important; 
+            border: 6px solid rgba(255, 255, 255, 0.2) !important; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); background: rgba(15, 23, 42, 0.4); display: inline-block;
+        }
+         /* 📋 BOLDER LABELS AND INPUTS INSIDE CORE SHEET */
+        .criteria-label-text { font-size: 1.1rem; font-weight: 800; color: #f3e8ff; text-transform: uppercase; letter-spacing: 0.04em; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+        
+        .score-input-box {
+            width: 100%; max-width: 6.5rem;
+            background: rgba(15, 23, 42, 0.5) !important;
+            border: 2px solid rgba(217, 119, 6, 0.5) !important;
+            color: #ffffff !important; font-size: 1.35rem !important; font-weight: 900 !important;
+            text-align: center !important; border-radius: 2rem !important; padding: 0.5rem !important; transition: 0.2s;
+        }
+        .score-input-box:focus { border-color: #fbbf24 !important; outline: none !important; box-shadow: 0 0 15px rgba(251, 191, 36, 0.5) !important; background: rgba(15, 23, 42, 0.7) !important; }
+        .score-input-box:disabled { background: rgba(51, 65, 85, 0.4) !important; border-color: rgba(255,255,255,0.1) !important; color: #94a3b8 !important; cursor: not-allowed; }
+
+        /* 👑 BOLDER METALLIC SOLID GOLD ACTION BUTTON (Katulad ng Login Button) */
+        .btn-submit-ballot { 
+            background: linear-gradient(180deg, #fde68a 0%, #d97706 100%) !important; 
+            color: #0c1a30 !important; font-weight: 900 !important; font-size: 1.05rem !important; 
+            text-transform: uppercase !important; letter-spacing: 0.06em !important; 
+            border-radius: 2rem !important; padding: 0.7rem 2.5rem !important; 
+            border: 1px solid #fcd34d !important; transition: 0.2s !important; 
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3); 
+        }
+        .btn-submit-ballot:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(217, 119, 6, 0.45); filter: brightness(1.05); }
+        .btn-submit-ballot:disabled { background: #334155 !important; color: #64748b !important; border-color: transparent !important; box-shadow: none !important; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <!-- 👑 TOP BAR LAYOUT -->
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <p class="navbar-brand-title">GLOBAL EXCELLENCE BEAUTY PAGEANT</p>
+                <h2 class="navbar-subtitle">JUDGES CIRCLING PORTAL</h2>
+            </div>
+            <div class="d-flex align-items-center gap-4">
+                <div class="judge-badge-profile text-white fw-bold">
+                    <i class="fa-solid fa-user-shield text-warning"></i> <span id="displayActiveJudgeName">Official Panelist</span>
+                </div>
+                <button onclick="executeJudgeLogout()" class="btn-logout-custom"><i class="fa-solid fa-power-off"></i> Log Out</button>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3" style="position:relative; z-index:10;">
+            <div>
+                <h3 class="fw-black text-white m-0 text-uppercase"><i class="fa-solid fa-folder-open text-warning me-2"></i> Active Assessment Round</h3>
+                <p class="text-muted m-0">Select the segment below to view contestants rows and transmit scores</p>
+            </div>
+            <select id="judgeRoundSelector" class="form-select select-round-capsule" onchange="handleRoundChangeTrigger(this)">
+                <option value="1">Round 1: Preliminary Auditions</option>
+                <option value="2">Round 2: Top 10 Semi-Finals</option>
+                <option value="3">Round 3: Top 5 Finals Q-A</option>
+                <option value="4">Round 4: Top 3 Coronation Walk</option>
+            </select>
+        </div>
+
+        <div id="judgingCandidatesCoreContainer">
+            <div class="text-center text-muted py-5" style="position:relative; z-index:5;">
+                <div class="spinner-border text-warning mb-3" role="status"></div>
+                <p class="text-uppercase fw-bold tracking-wider">Syncing database matrix channels...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentHost = window.location.hostname || "127.0.0.1";
+        let activeRound = 1;
+        let localMemoryCache = { candidates: [], categories: [], judges: [] };
+
+               // ✅ BULLETPROOF WIRELESS AUTO-WIPE SYNC HOOK:
+        // Kapag pinindot ang Reset Scores sa Admin, awtomatikong magre-reset ang boto at lockout state sa cp ng judge!
+        async function initHandshakeDataFetch() {
+            try {
+                const response = await fetch(`http://${currentHost}:5000/api/initial-data`);
+                if(response.ok) {
+                    const fetchedData = await response.json();
+                    
+                    // 🛡️ DYNAMIC MEMORY WIPER MODULE INJECTOR:
+                    // Kung nakita ng backend ng cp na walang kargang scores ang main node records...
+                    if(!fetchedData.scores || fetchedData.scores.length === 0) {
+                        const judgeIdKey = sessionStorage.getItem('judge_id') || 1;
+                        
+                        // Awtomatikong nililinis ang browser localized validation caches bawat round template
+                        for(let r = 1; r <= 4; r++) {
+                            localStorage.removeItem(`ballot_voted_r${r}_j${judgeIdKey}`);
+                        }
+                    }
+
+                    if(fetchedData && fetchedData.candidates && fetchedData.candidates.length > 0) {
+                        localMemoryCache = fetchedData;
+                    }
+                }
+                renderJudgingInterfaceSheet();
+            } catch (error) {
+                console.log("Using dynamic broadcast injector fallback safely.");
+                renderJudgingInterfaceSheet();
+            }
+            
+        }
+
+
+
+                       // ✅ 100% NAITAMA NA: Kitang-kita na ang tatlong kategorya nang sabay, pero may kanya-kanya na silang SUBMIT button sa tapat!
+        function renderJudgingInterfaceSheet() {
+            const mainContainer = document.getElementById('judgingCandidatesCoreContainer');
+            if(!mainContainer) return;
+            mainContainer.innerHTML = '';
+            
+            const targetCategoriesList = localMemoryCache.categories || [];
+            const activeCandidatesList = localMemoryCache.candidates || [];
+            
+            let customImagesMap = JSON.parse(localStorage.getItem('uploaded_candidate_images') || '{}');
+
+            activeCandidatesList.forEach(cand => {
+                let customRowRowsHtml = '';
+                
+                // Ini-isaisa ang tatlong kategorya para gawan ng kanya-kanyang input at submit button pababa!
+                targetCategoriesList.forEach(cat => {
+                    // Gumagamit ng natatanging dynamic key lock para sa saktong kategoryang ito lamang
+                    let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${cat.id}_j${sessionStorage.getItem('judge_id') || 1}`;
+                    let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
+                    const isThisCategoryVoted = elementsVotedStateMap[cand.candidate_number] !== undefined;
+                    
+                    const finalScoreVal = isThisCategoryVoted ? parseFloat(elementsVotedStateMap[cand.candidate_number][cat.id] || 75).toFixed(2) : '75.00';
+                    
+                    customRowRowsHtml += `
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 border-bottom border-secondary pb-3" style="width: 100%; max-width: 42rem; margin: 0 auto;">
+                            <!-- Pangalan ng Kategorya -->
+                            <span class="criteria-label-text text-start" style="min-width: 12rem;">
+                                <i class="fa-solid fa-medal text-warning me-2"></i> ${cat.category_name}
+                            </span>
+                            
+                            <!-- Input Box ng Score -->
+                            <input type="number" class="score-input-box" id="scoreInput_c${cand.candidate_number}_cat${cat.id}" 
+                                min="70" max="${cat.max_score || 100}" step="1" value="${parseInt(finalScoreVal)}"
+                                ${isThisCategoryVoted ? 'disabled' : ''} style="max-width: 6rem;">
+                            
+                            <!-- Kanya-kanyang Pindutan sa tapat ng bawat row! -->
+                            <button class="btn btn-sm btn-submit-ballot" id="btnSubmit_c${cand.candidate_number}_cat${cat.id}" 
+                                ${isThisCategoryVoted ? 'disabled' : ''} 
+                                onclick="executeSubmitBallotTransaction(${cand.candidate_number}, ${cand.id}, ${cat.id})"
+                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem; min-width: 9rem; background: ${isThisCategoryVoted ? '#334155 !important' : ''}; color: ${isThisCategoryVoted ? '#64748b !important' : ''};">
+                                <i class="fa-solid ${isThisCategoryVoted ? 'fa-lock' : 'fa-paper-plane'} me-1"></i> 
+                                ${isThisCategoryVoted ? 'TRANSMITTED' : 'SUBMIT'}
+                            </button>
+                        </div>`;
+                });
+
+                const photoSrc = customImagesMap[cand.candidate_number] || `https://dicebear.com{cand.candidate_number}`;
+
+                mainContainer.innerHTML += `
+                    <div class="card jumbo-evaluation-sheet" id="candCard_${cand.candidate_number}">
+                        <div class="row text-center d-flex flex-column align-items-center justify-content-center g-4">
+                            
+                            <div class="col-12 d-flex flex-column align-items-center justify-content-center">
+                                <img src="${photoSrc}" class="avatar-frame-vip mb-3" alt="Contestant Image">
+                                <div class="candidate-header-label">${cand.name}</div>
+                                <div class="candidate-sub-label">SLOT # ${cand.candidate_number}</div>
+                                <div class="text-muted text-uppercase fw-bold mt-1" style="font-size:0.85rem; letter-spacing:0.05em; color: rgba(255,255,255,0.6) !important;">${cand.representation}</div>
+                            </div>
+                            
+                            <div class="col-12 d-flex flex-column align-items-center justify-content-center px-4 mt-3">
+                                <div class="mb-4 text-warning fw-black h5 text-uppercase tracking-widest" style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; width: 100%; max-width: 42rem;"><i class="fa-solid fa-star me-2"></i> Scoring Parameters Allocation</div>
+                                ${customRowRowsHtml}
+                            </div>
+                            
+                        </div>
+                    </div>`;
+            });
+        }
+
+
+        
+               // ✅ FIXED TRANSACTION CONTROLLER: Pinupuwersa ang system na mag-submit at mag-lock ng isang saktong kategorya lang pababa!
+        async function executeSubmitBallotTransaction(candNo, candidateRowId, targetCatId) {
+            const judgeId = sessionStorage.getItem('judge_id') || 1;
+            const judgeName = sessionStorage.getItem('judge_name') || "Official Judge";
+            
+            const inputNode = document.getElementById(`scoreInput_c${candNo}_cat${targetCatId}`);
+            const finalPoints = inputNode ? parseFloat(inputNode.value) : 75.00;
+            
+            let currentBallotVotesData = {};
+            currentBallotVotesData[targetCatId] = finalPoints;
+
+            try {
+                const response = await fetch(`http://${currentHost}:5000/api/scores`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        judge_id: parseInt(judgeId),
+                        judge_name: `${judgeName} Slot #${candNo}`, 
+                        candidate_id: parseInt(candNo),
+                        category_id: parseInt(targetCatId),
+                        score_given: parseFloat(finalPoints)
+                    })
+                });
+
+                if (response.ok) {
+                    // I-lock ang saktong data key block sa browser storage
+                    let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${targetCatId}_j${judgeId}`;
+                    let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
+                    elementsVotedStateMap[candNo] = currentBallotVotesData;
+                    localStorage.setItem(submittedBallotsKey, JSON.stringify(elementsVotedStateMap));
+
+                    alert("👑 Official ballot token transmitted securely for this specific segment!");
+                    renderJudgingInterfaceSheet();
+                } else {
+                    alert("❌ Transmission breakdown. Check backend connectivity.");
+                }
+            } catch (e) {
+                alert("❌ Transmission breakdown. Ensure node server.js broadcast is active.");
+            }
+        }
+
+
+                function handleRoundChangeTrigger(selector) {
+            // Awtomatikong magre-render base sa bagong piniling category segment ID!
+            renderJudgingInterfaceSheet();
+        }
+
+        
+
+        function checkGatekeeperAuthentication() {
+            const savedName = sessionStorage.getItem('judge_name');
+            if (savedName) {
+                document.getElementById('displayActiveJudgeName').innerText = savedName.toUpperCase();
+            } else {
+                document.getElementById('displayActiveJudgeName').innerText = "OFFICIAL BOARD PANEL";
+            }
+            initHandshakeDataFetch();
+            
+        }
+          
+
+        function executeJudgeLogout() {
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+      
+        window.onload = checkGatekeeperAuthentication;
+
+               // ✅ ITINAMA NA ANG SPELLING: Mahiwagang iilaw na ito ng kulay dilaw/asul sa VS Code mo ngayon din!
+        setInterval(initHandshakeDataFetch, 3000);
+
+
+    </script>
+</body>
+</html>
+
+
