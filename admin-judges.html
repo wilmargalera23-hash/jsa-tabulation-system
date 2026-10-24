@@ -196,12 +196,12 @@
 
     <!-- 👑 CORE ENGINE SCRIPT SECURITY HANDSHAKE INTERFACES -->
     <script>
-        const currentHost = window.location.hostname || "127.0.0.1";
-
+         // ✅ CLOUD TRANSMISSION ROUTE: Nakaturo na sa inyong magiging live Render backend gateway safely!
+        const cloudBackendUrl = "https://onrender.com";
         async function fetchSystemJudgesRoster() {
             const listBody = document.getElementById('judgesMasterRosterTableBody');
             try {
-                const response = await fetch(`http://${currentHost}:5000/api/judges`);
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/judges`);
                 const data = await response.json();
                 
                 listBody.innerHTML = '';
