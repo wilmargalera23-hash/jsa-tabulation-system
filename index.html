@@ -123,7 +123,8 @@
     </div>
         <!-- 👑 UNIVERSAL INTEGRATED SECURITY SESSIONS BYPASS INTERCEPTOR -->
     <script>
-        const currentHost = window.location.hostname || "127.0.0.1";
+       // ✅ CLOUD TRANSMISSION ROUTE: Nakaturo na sa inyong magiging live Render backend gateway safely!
+        const cloudBackendUrl = "https://onrender.com";
         const errorBlock = document.getElementById('loginErrorMessageBlock');
 
         document.getElementById('systemLoginFormModule').addEventListener('submit', async (e) => {
@@ -162,7 +163,7 @@
 
 
                 // Sumisilip sa database para i-verify kung operational ang endpoint connection trail mo
-                const response = await fetch(`http://${currentHost}:5000/api/judges`);
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/judges`);
                 if (response.ok) {
                     const officialJudgesList = await response.json();
                     const matchedJudge = officialJudgesList.find(j => {
