@@ -16,7 +16,7 @@ const io = new Server(server, {
 
 // ✅ INTERCONNECTED AIVEN CLOUD ENGINE: Ready na para basahin ang cloud database!
 const dbConfig = {
-    host: '://aivencloud.com',
+    host: 'aivencloud.com',
     port: 17439,
     user: 'avnadmin',
     password: 'AVNS_NACtG7Ht7GVRAEYY-f_',
