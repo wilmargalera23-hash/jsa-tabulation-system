@@ -27,16 +27,95 @@ const dbConfig = {
 };
 
 
+// ✅ CLOUD AUTO-MIGRATION INFRASTRUCTURE ENGINE:
+// Awtomatikong nagtatayo ng mga tables, candidates, at 30 judges sa cloud kapag nakitang blangko ang database!
 let db;
 async function connectDatabase() {
     try {
         db = await mysql.createPool({...dbConfig, waitForConnections: true, connectionLimit: 20});
-        console.log("💾 Pageant core MariaDB/MySQL storage block connected successfully!");
+        console.log("💾 Pageant cloud database connection handshake authorized successfully!");
+        
+        // 🚀 1. GUMAWA NG TABLES KUSA SA CLOUD
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS \`candidates\` (
+              \`id\` int(11) NOT NULL AUTO_INCREMENT,
+              \`name\` varchar(255) NOT NULL,
+              \`candidate_number\` int(11) NOT NULL,
+              \`representation\` varchar(255) NOT NULL,
+              PRIMARY KEY (\`id\`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `).catch((e) => console.log("Candidates table exist check."));
+
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS \`categories\` (
+              \`id\` int(11) NOT NULL AUTO_INCREMENT,
+              \`category_name\` varchar(255) NOT NULL,
+              \`max_score\` int(11) DEFAULT 100,
+              PRIMARY KEY (\`id\`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `).catch((e) => console.log("Categories table exist check."));
+
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS \`judges\` (
+              \`id\` int(11) NOT NULL AUTO_INCREMENT,
+              \`judge_name\` varchar(255) NOT NULL,
+              \`access_code\` varchar(50) NOT NULL,
+              PRIMARY KEY (\`id\`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `).catch((e) => console.log("Judges table exist check."));
+
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS \`scores\` (
+              \`id\` int(11) NOT NULL AUTO_INCREMENT,
+              \`judge_id\` int(11) NOT NULL,
+              \`candidate_id\` int(11) NOT NULL,
+              \`category_id\` int(11) NOT NULL,
+              \`score_given\` decimal(5,2) NOT NULL,
+              PRIMARY KEY (\`id\`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `).catch((e) => console.log("Scores table exist check."));
+
+        // 🚀 2. SEED AT ISAKSAK ANG KUMPLETONG MGA KANDIDATA
+        const [candCheck] = await db.execute("SELECT COUNT(*) as total FROM candidates");
+        if (candCheck[0].total === 0) {
+            console.log("⏳ Cloud candidates list is blank. Injecting core contestants records...");
+            await db.execute("INSERT INTO candidates (id, name, candidate_number, representation) VALUES (5, 'Marian Rivera', 1, 'Cavite'), (6, 'Angel Locsin', 2, 'Bulacan'), (7, 'Catriona Gray', 3, 'Oas, Albay'), (12, 'Gazini Ganados', 4, 'Cebu')");
+        }
+
+        // 🚀 3. SEED AT ISAKSAK ANG MGA CATEGORIES
+        const [catCheck] = await db.execute("SELECT COUNT(*) as total FROM categories");
+        if (catCheck[0].total === 0) {
+            console.log("⏳ Cloud categories table is blank. Injecting criteria parameters...");
+            await db.execute("INSERT INTO categories (id, category_name, max_score) VALUES (6, 'Swimwear Competition', 100), (7, 'Evening Gown Competition', 100), (8, 'Interview Segment', 100)");
+        }
+
+        // 🚀 4. SEED AT ISAKSAK ANG KUMPLETONG 30 JUDGES NA MAY MGA PANGALAN
+        const [judgeCheck] = await db.execute("SELECT COUNT(*) as total FROM judges");
+        if (judgeCheck[0].total === 0) {
+            console.log("⏳ Cloud judges panel registry is empty. Deploying 30 official profiles...");
+            const thirtyJudgesArray = [
+                [1, 'Hon. Maria Theresa R. Cruz', 'judge1'], [2, 'Dr. Alejandro G. Santos', 'judge2'], [3, 'Engr. Robert C. Bautista', 'judge3'],
+                [4, 'Prof. Evelyn T. Soriano', 'judge4'], [5, 'Atty. Fernando M. Jose', 'judge5'], [6, 'Dr. Christina H. Lopez', 'judge6'],
+                [7, 'Arch. Manuel S. Valenzuela', 'judge7'], [8, 'Capt. Antonio K. Dimaculangan', 'judge8'], [9, 'Ms. Samantha Mae L. Aquino', 'judge9'],
+                [10, 'Hon. Ricardo P. Dela Cruz', 'judge10'], [11, 'Dr. Jonathan E. Ramirez', 'judge11'], [12, 'Prof. Ma. Clarissa V. Ngo', 'judge12'],
+                [13, 'Engr. David Timothy S. Almeda', 'judge13'], [14, 'Atty. Beatrice Jane C. Luna', 'judge14'], [15, 'Hon. Wilfredo G. Panganiban', 'judge15'],
+                [16, 'Ms. Patricia Nicole R. Reyes', 'judge16'], [17, 'Mr. Christopher John D. Silva', 'judge17'], [18, 'Dr. Elizabeth Anne S. Castro', 'judge18'],
+                [19, 'Prof. Roderick M. Del Rosario', 'judge19'], [20, 'Engr. Katrina Bianca F. Tiongson', 'judge20'], [21, 'Atty. Michael Angelo G. Peralta', 'judge21'],
+                [22, 'Hon. Sophia Marie L. Mendoza', 'judge22'], [23, 'Dr. Benjamin Joseph K. Tan', 'judge23'], [24, 'Ms. Danielle Joyce P. Co', 'judge24'],
+                [25, 'Mr. Emmanuel Vance S. Guinto', 'judge25'], [26, 'Prof. Rowena Faith T. Lim', 'judge26'], [27, 'Engr. Gabriel Luis M. Santos', 'judge27'],
+                [28, 'Atty. Veronica Ashley R. Pascual', 'judge28'], [29, 'Hon. Jose Maria C. Hernandez', 'judge29'], [30, 'Hon. Chief Justice Evaluation Panel', 'judge30']
+            ];
+            for (let j of thirtyJudgesArray) {
+                await db.execute("INSERT INTO judges (id, judge_name, access_code) VALUES (?, ?, ?)", j).catch(() => {});
+            }
+            console.log("👑 CLOUD DATABASE ACTIVATED: 30 Judges and active candidates successfully deployed!");
+        }
     } catch (error) {
-        console.log("⚠️ Database connection failure: ", error);
+        console.log("⚠️ Database cloud initialization failure: ", error.message);
     }
 }
 connectDatabase();
+
 let initialDatasetMemory = {
     candidates: [
         { id: 1, candidate_number: 1, name: 'MARIAN RIVERA', representation: 'BAGONG SILANG' },
