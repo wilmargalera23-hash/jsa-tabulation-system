@@ -210,12 +210,13 @@
 
     <!-- 👑 CORE ENGINE BACKEND LOGIC SYNC SCRIPTS LAYER -->
     <script>
-        const currentHost = window.location.hostname || "127.0.0.1";
-
+              // ✅ CLOUD TRANSMISSION ROUTE: Nakaturo na sa inyong magiging live Render backend gateway safely!
+        const cloudBackendUrl = "https://onrender.com";
+        
         async function fetchCandidatesMasterList() {
             const listBody = document.getElementById('candidatesMasterRosterTableBody');
             try {
-                const response = await fetch(`http://${currentHost}:5000/api/candidates`);
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/candidates`);
                 const data = await response.json();
                 
                 // Hilaan ng images map memory block para i-display ang mini avatar real-time
@@ -253,7 +254,7 @@
             // 👑 THE MASTER BASE64 IMAGE MATRIX COMPILER PROTOCOL
             const processFormAndSave = async (base64ImageStr = null) => {
                 try {
-                    const response = await fetch(`http://${currentHost}:5000/api/candidates`, {
+                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/candidates`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ candidate_number: parseInt(candNo), name: candName, representation: candRep })
@@ -290,7 +291,7 @@
         async function executeDeleteCandidateRow(targetId, candNo) {
             if(confirm("🔒 ACCESS DANGER WARNING:\nAre you sure you want to completely purge this delegate? This will erase all submitted score tallies associated with this row!")) {
                 try {
-                    const response = await fetch(`http://${currentHost}:5000/api/candidates/${targetId}`, { method: 'DELETE' });
+                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/candidates/${targetId}`, { method: 'DELETE' });
                     if(response.ok) {
                         let customImagesMap = JSON.parse(localStorage.getItem('uploaded_candidate_images') || '{}');
                         delete customImagesMap[candNo];
