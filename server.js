@@ -14,13 +14,18 @@ const io = new Server(server, {
     cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE"] }
 });
 
-// ✅ SECURE CONNECTION: Nakakonekta sa inyong active database schema sa phpMyAdmin
+// ✅ INTERCONNECTED AIVEN CLOUD ENGINE: Ready na para basahin ang cloud database!
 const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'pageant_scoring_db'
+    host: '://aivencloud.com',
+    port: 17439,
+    user: 'avnadmin',
+    password: 'AVNS_NACtG7Ht7GVRAEYY-f_',
+    database: 'defaultdb',
+    ssl: { rejectUnauthorized: false }, // Pinaka-kritikal para payagan ang aiven cloud network security handshakes!
+    waitForConnections: true,
+    connectionLimit: 20
 };
+
 
 let db;
 async function connectDatabase() {
@@ -285,9 +290,7 @@ app.post('/api/system/reset-judges', async (req, res) => {
 });
 
 
-// ✅ DYNAMIC NETWORK PROVISIONER: Awtomatikong babasahin ang cloud execution ports ng Railway safely!
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Network core active and broadcasting safely on port ${PORT}`);
+    console.log(`🚀 Tabulation Backend Server Core Engine broadcasting securely across WiFi network on port ${PORT}`);
 });
-
