@@ -192,12 +192,13 @@
 
     <!-- 👑 CORE ENGINE SCRIPT HANDSHAKE LOGIC -->
     <script>
-        const currentHost = window.location.hostname || "127.0.0.1";
+         // ✅ CLOUD TRANSMISSION ROUTE: Nakaturo na sa inyong magiging live Render backend gateway safely!
+        const cloudBackendUrl = "https://onrender.com";
 
         async function fetchSystemCriteriaRoster() {
             const listBody = document.getElementById('criteriaMasterTableBody');
             try {
-                const response = await fetch(`http://${currentHost}:5000/api/criteria`);
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/criteria`);
                 const data = await response.json();
                 
                 listBody.innerHTML = '';
@@ -226,7 +227,7 @@
             const maxScore = document.getElementById('inputMaxScore').value;
 
             try {
-                const response = await fetch(`http://${currentHost}:5000/api/criteria`, {
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/criteria`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ category_name: criteriaName, max_score: parseInt(maxScore) })
@@ -247,7 +248,7 @@
         async function executeDeleteCriteriaRow(targetId) {
             if(confirm("🔒 ACCESS DANGER WARNING:\nAre you sure you want to purge this criteria row? This will completely drop this evaluation segment and erase all associated submitted scores records!")) {
                 try {
-                    const response = await fetch(`http://${currentHost}:5000/api/criteria/${targetId}`, { method: 'DELETE' });
+                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/criteria/${targetId}`, { method: 'DELETE' });
                     if(response.ok) {
                         fetchSystemCriteriaRoster();
                     }
