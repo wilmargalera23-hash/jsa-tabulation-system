@@ -274,7 +274,7 @@
         async function executeSystemResetScoresAction() {
             if (confirm("🚨 WARNING ASSESSMENT PANEL: Are you absolutely certain you want to TRUNCATE and completely ERASE all transmitted score entries from the central tabulation tables? This transaction is permanent and cannot be reversed!")) {
                 try {
-                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/system/reset-scores`, { method: 'POST' });
+                    const response = await fetch(`${cloudBackendUrl}/api/system/reset-scores`, { method: 'POST' });
                     if (response.ok) {
                         alert("👑 Matrix Clearance Success: All scorecard records successfully erased from phpMyAdmin core registers!");
                         fetchDashboardAnalyticsData();
@@ -288,7 +288,7 @@
         async function executeSystemResetJudgesAction() {
             if (confirm("🚨 WARNING CORE DATABASE: Are you absolutely certain you want to PURGE and completely RESET all registered official panelist titles and access logs inside the judges system table?")) {
                 try {
-                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/system/reset-judges`, { method: 'POST' });
+                    const response = await fetch(`${cloudBackendUrl}/api/system/reset-judges`, { method: 'POST' });
                     if (response.ok) {
                         alert("👑 Database Cleared: All official judge account data structures fully wiped and refreshed!");
                         fetchDashboardAnalyticsData();
@@ -310,16 +310,16 @@
         }
 
             try {
-                const scoresResponse = await fetch(`http://${cloudBackendUrl}:5000/api/admin/live-logs`);
+                const scoresResponse = await fetch(`${cloudBackendUrl}/api/admin/live-logs`);
                 const scoresData = await scoresResponse.json();
                 
-                const candidatesResponse = await fetch(`http://${currentHost}:5000/api/candidates`);
+                const candidatesResponse = await fetch(`${currentHost}/api/candidates`);
                 const candidatesData = await candidatesResponse.json();
 
-                const categoriesResponse = await fetch(`http://${currentHost}:5000/api/criteria`);
+                const categoriesResponse = await fetch(`${currentHost}/api/criteria`);
                 const categoriesData = await categoriesResponse.json();
 
-                const judgesResponse = await fetch(`http://${currentHost}:5000/api/judges`);
+                const judgesResponse = await fetch(`${currentHost}/api/judges`);
                 const judgesData = await judgesResponse.json();
 
                 localMemoryCache.scores = scoresData || [];
