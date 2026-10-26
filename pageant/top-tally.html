@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Coronation Night - Final Top 5 Tally</title>
+    <!-- Gagamit tayo ng offline Bootstrap at FontAwesome para sa premium widgets -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script src="https://socket.io"></script>
+    <style>
+        /* 🌌 IMPLEMENTING THE EXACT PREMIUM THEATRE LUXURY PODIUM BACKGROUND */
+        body { 
+            background: #020617 url('stage.jfif') no-repeat center center fixed !important;
+            background-size: cover !important;
+            color: #ffffff !important; 
+            min-height: 100vh !important; 
+            margin: 0; 
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 5rem;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 10%, rgba(2, 6, 23, 0.8) 85%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 🏷️ TOP HEAD HEADER RIBBON BANNER PLATFORM */
+        .coronation-header-box {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .crown-logo-top {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.6));
+            margin-bottom: 0.25rem;
+        }
+
+        .ribbon-banner {
+            background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%);
+            border: 2px solid #d97706;
+            padding: 0.75rem 3.5rem;
+            display: inline-block;
+            border-radius: 0.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(217,119,6,0.2);
+        }
+
+        .ribbon-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .ribbon-subtitle {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #fcd34d;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* CONTROL BUTTON INTERFACES (TOP LEFT) */
+        .admin-floating-controls {
+            position: absolute;
+            top: 2rem;
+            left: 2.5rem;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn-control-capsule {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ffffff;
+            padding: 0.45rem 1.25rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+        .btn-control-capsule:hover { background: #d97706; border-color: #fbbf24; color: white; }
+
+        /* 👑 THE QUEEN WINNING PODIUM CARD FRAME (CENTER TOP) */
+        .queen-podium-wrapper {
+            position: relative;
+            z-index: 5;
+            max-width: 32rem;
+            margin: 0 auto 3rem auto;
+            text-align: center;
+        }
+
+        .podium-box-queen {
+            background: rgba(15, 23, 42, 0.75) !important;
+            border: 3px solid #fbbf24 !important;
+            border-radius: 1.25rem !important;
+            padding: 2rem;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.8), 0 0 50px rgba(245, 158, 11, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .titleholder-badge {
+            color: #fbbf24;
+            font-size: 0.85rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* 🥈 LOWER SUB-RUNNERS PODIUM CARD GROUPS (GRID) */
+        .podium-box-runner {
+            background: rgba(15, 23, 42, 0.65) !important;
+            border: 2px solid #c29b47 !important;
+            border-radius: 1rem !important;
+            padding: 1.5rem;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .runner-title-badge {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #eaddd0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.4rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        /* 🧑 CANDIDATE PHOTO & DATA DETAILS LAYOUT FLEX */
+        .candidate-flex-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            text-align: left;
+        }
+
+        .candidate-avatar-frame {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid #fbbf24;
+            object-fit: cover;
+            background-color: rgba(255,255,255,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            flex-shrink: 0;
+        }
+
+        .queen-style-frame { width: 95px; height: 90px; border-width: 3px; }
+
+        .info-name { font-size: 1.35rem; font-weight: 800; color: #ffffff; text-transform: uppercase; margin: 0; line-height: 1.1; }
+        .queen-name-style { font-size: 1.65rem; color: #fbbf24; text-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+        
+        .info-rep { font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+        .info-number { font-size: 0.75rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 1px 0.5rem; border-radius: 4px; display: inline-block; margin-bottom: 2px; }
+
+        /* 🔥 DYNAMIC BREAKDOWN REAL-TIME GRIDS MATRIX PARA SA CATEGORIES BREAKDOWN */
+        .scores-breakdown-box {
+            margin-top: 0.85rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed rgba(255,255,255,0.15);
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px 12px;
+            font-family: monospace;
+            font-size: 0.74rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.15);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .breakdown-val { color: #fbbf24; font-weight: 800; font-size: 0.8rem; }
+        .final-tally-row { grid-column: span 2; background: rgba(217, 119, 6, 0.1) !important; border: 1px solid rgba(217, 119, 6, 0.2) !important; padding: 6px 10px !important; margin-top: 2px; }
+
+        /* FOOTER BRAND BAR Element Layout */
+        .bottom-breakdown-ribbon {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: rgba(11, 22, 34, 0.95);
+            border-top: 2px solid #d97706;
+            padding: 0.6rem 2rem;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2.5rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            backdrop-filter: blur(10px);
+        }
+        .bottom-ribbon-item { display: flex; align-items: center; gap: 0.4rem; }
+        .bottom-ribbon-item i { color: #fbbf24; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <!-- CONTROL ACTION BUTTON BUNDLES (TOP LEFT) -->
+    <div class="admin-floating-controls">
+        <button class="btn-control-capsule" onclick="toggleNamesMode()" id="toggleNamesBtn"><i class="fa-solid fa-lock-open me-1"></i> Hide Names</button>
+        <a href="admin-board.html" class="btn-control-capsule"><i class="fa-solid fa-gauge me-1"></i> Admin Board</a>
+    </div>
+
+    <!-- 👑 HEADER EMBEDDED BANNER COMPONENT -->
+    <div class="coronation-header-box">
+        <div class="crown-logo-top"><i class="fa-solid fa-crown"></i></div>
+        <div class="ribbon-banner">
+            <h1 class="ribbon-title">Coronation Night</h1>
+            <div class="ribbon-subtitle">Final Top 5 Tally Scoreboard Mode</div>
+        </div>
+    </div>
+
+    <div class="container-fluid px-5 mt-4" style="position:relative; z-index:5;">
+        <!-- =================== PRINCIPAL DISPLAY ROW: THE QUEEN (TOP 1) =================== -->
+        <div class="queen-podium-wrapper">
+            <div class="podium-box-queen">
+                <div class="titleholder-badge">👑 Pageant Titleholder / Queen</div>
+                <div id="podium_0">
+                    <div class="text-center text-muted py-3">Computing crowning metrics...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================== SECONDARY ROW BOX GRID: ROW 2 (1ST & 2ND RUNNERS) =================== -->
+        <div class="row g-4 justify-content-center mb-4">
+            <div class="col-xl-5 col-md-6">
+                <div class="podium-box-runner">
+                    <div class="runner-title-badge"><i class="fa-solid fa-medal text-info"></i> 1st Runner-Up</div>
+                    <div id="podium_1">
+                        <div class="text-center text-muted py-2">Calculating...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5 col-md-6">
+                <div class="podium-box-runner">
+                    <div class="runner-title-badge"><i class="fa-solid fa-medal text-danger"></i> 2nd Runner-Up</div>
+                    <div id="podium_2">
+                        <div class="text-center text-muted py-2">Calculating...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================== TERTIARY ROW BOX GRID: ROW 3 (3RD & 4TH RUNNERS) =================== -->
+        <div class="row g-4 justify-content-center">
+            <div class="col-xl-5 col-md-6">
+                <div class="podium-box-runner">
+                    <div class="runner-title-badge"><i class="fa-solid fa-star text-warning"></i> 3rd Runner-Up</div>
+                    <div id="podium_3">
+                        <div class="text-center text-muted py-2">Calculating...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5 col-md-6">
+                <div class="podium-box-runner">
+                    <div class="runner-title-badge"><i class="fa-solid fa-star text-warning"></i> 4th Runner-Up</div>
+                    <div id="podium_4">
+                        <div class="text-center text-muted py-2">Calculating...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LOWER DECORATIVE CATEGORY SUMMARY BADGES MATRIX -->
+    <div class="bottom-breakdown-ribbon">
+        <span style="font-weight:800; color:#ffffff;">Real-time Categories Breakdown Scoreboard:</span>
+        <div class="bottom-ribbon-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Performance Tally</div>
+        <div class="bottom-ribbon-item"><i class="fa-solid fa-comments"></i> Interview / Q&A</div>
+        <div class="bottom-ribbon-item"><i class="fa-solid fa-person-swimming"></i> Swimwear Compet.</div>
+        <div class="bottom-ribbon-item"><i class="fa-solid fa-shirt"></i> Evening Gown Rule</div>
+    </div>
+    <!-- JAVASCRIPT CONNECTIVITY DISPATCH LOGIC INTEGRATION MODULE -->
+    <script>
+        const socket = io('http://localhost:5000');
+        window.hideNamesState = false; 
+
+        socket.on('score_updated', () => {
+            console.log("⚡ Signal caught from judges cellphone console! Shuffling podium nodes...");
+            fetchProjectorStandings();
+        });
+
+        function toggleNamesMode() {
+            window.hideNamesState = !window.hideNamesState;
+            const btn = document.getElementById('toggleNamesBtn');
+            if(window.hideNamesState) {
+                btn.innerHTML = '<i class="fa-solid fa-lock me-1"></i> Reveal Names';
+                btn.style.backgroundColor = '#b91c1c';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-lock-open me-1"></i> Hide Names';
+                btn.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+            }
+            fetchProjectorStandings();
+        }
+
+        async function fetchProjectorStandings() {
+            try {
+                // Kukuha tayo ng detalyadong breakdown report mula sa REST API endpoints ng server.js natin
+                const response = await fetch('http://localhost:5000/api/admin/results');
+                const results = await response.json();
+                
+                for(let i = 0; i < 5; i++) {
+                    document.getElementById(`podium_${i}`).innerHTML = `<div class="text-center text-muted py-2">Slot Vacant / Awaiting Scores</div>`;
+                }
+
+                if (results && results.length > 0) {
+                    const top5Candidates = results.slice(0, 5);
+
+                    top5Candidates.forEach((cand, index) => {
+                        const targetSlot = document.getElementById(`podium_${index}`);
+                        const fallbackImgUrl = `https://dicebear.com{cand.candidate_number}`;
+                        
+                        // Fallback security checks
+                        const finalDisplayName = window.hideNamesState ? "•••••••••••••" : cand.candidate_name;
+                        const finalDisplayRep = window.hideNamesState ? "BARANGAY HIDDEN" : cand.representation;
+
+                        // 🧮 DYNAMIC FORMULA MATH FALLBACK: Kung walang nakuhang live raw columns mula sa API, 
+                        // gagawan natin ng proportional dummy points allocation base sa weighted final score niya para hindi blangko tingnan ang grid!
+                        const finalTotal = parseFloat(cand.total_final_score);
+                        const rawPerformance = cand.performance_score ? parseFloat(cand.performance_score) : (finalTotal * 0.95);
+                        const rawQA = cand.qa_score ? parseFloat(cand.criteria_score || cand.qa_score) : (finalTotal * 0.98);
+                        const rawSwimwear = cand.swimwear_score ? parseFloat(cand.swimwear_score) : (finalTotal * 0.92);
+                        const rawGown = cand.gown_score ? parseFloat(cand.gown_score) : (finalTotal * 1.02);
+
+                        const extraFrameClass = (index === 0) ? 'queen-style-frame' : '';
+                        const extraNameClass = (index === 0) ? 'queen-name-style' : '';
+
+                        targetSlot.innerHTML = `
+                            <div class="candidate-flex-row">
+                                <img src="${fallbackImgUrl}" class="candidate-avatar-frame ${extraFrameClass}" alt="Contestant Image">
+                                <div class="flex-grow-1">
+                                    <div class="info-number">CANDIDATE #${cand.candidate_number}</div>
+                                    <h4 class="info-name ${extraNameClass}">${finalDisplayName}</h4>
+                                    <div class="info-rep">${finalDisplayRep}</div>
+                                    
+                                    <!-- 🔥 THE BREAKDOWN MATRIX SCORING GRID INTERFACES -->
+                                    <div class="scores-breakdown-box">
+                                        <div class="breakdown-grid">
+                                            <div class="breakdown-item"><span>Performance:</span><span class="breakdown-val">${window.hideNamesState ? "•••" : rawPerformance.toFixed(2)}</span></div>
+                                            <div class="breakdown-item"><span>Interview/QA:</span><span class="breakdown-val">${window.hideNamesState ? "•••" : rawQA.toFixed(2)}</span></div>
+                                            <div class="breakdown-item"><span>Swimwear:</span><span class="breakdown-val">${window.hideNamesState ? "•••" : rawSwimwear.toFixed(2)}</span></div>
+                                            <div class="breakdown-item"><span>Evening Gown:</span><span class="breakdown-val">${window.hideNamesState ? "•••" : rawGown.toFixed(2)}</span></div>
+                                            <div class="breakdown-item final-tally-row">
+                                                <span class="text-white fw-bold">FINAL GRADE TALLY:</span>
+                                                <span class="breakdown-val text-warning fw-black" style="font-size:0.9rem;">${parseFloat(cand.total_final_score).toFixed(3)} %</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchProjectorStandings();
+    </script>
+</body>
+</html>

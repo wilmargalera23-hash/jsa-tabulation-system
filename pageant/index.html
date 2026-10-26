@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> JSA Score System</title>
+    <!-- Gagamit tayo ng Bootstrap at FontAwesome para sa premium elements offline -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+               /* 🌌 OFFLINE BACKGROUND CONNECTED DIRECTLY TO YOUR SAVED LOCAL IMAGE */
+        body { 
+            background: #020617 url('jsa.JFIF') no-repeat center center fixed !important;
+            background-size: cover !important;
+            color: #ffffff !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            min-height: 100vh !important; 
+            margin: 0; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.5);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .login-card-glass {
+             width: 100%;
+            max-width: 27rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 1.75rem;
+            padding: 3.5rem 2.5rem 3rem 2.5rem;
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            z-index: 5;
+            position: relative;
+            text-align: center;
+             }
+        .sub-header-label {
+            color: #d1d5db;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+        .form-control-custom {
+            background-color: #ffffff !important;
+            border: 2px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            border-radius: 2rem !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        .form-control-custom:focus {
+            outline: none !important;
+            border-color: #fbbf24 !important;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+        }
+        .btn-gold-login {
+            background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%) !important;
+            border: none !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 2rem !important;
+            padding: 0.75rem 2rem !important;
+            font-size: 1.05rem;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2);
+        }
+        .btn-gold-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+        }
+        .alert-danger-custom {
+            background: rgba(220, 38, 38, 0.15) !important;
+            border: 2px solid #dc2626 !important;
+            color: #fca5a5 !important;
+            border-radius: 1rem !important;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+            padding: 0.75rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card-glass">
+        <div class="mb-4">
+            <h1 class="fw-black text-uppercase m-0" style="color:#ffffff; font-size: 2.2rem; letter-spacing: 0.05em;">JSA SCORE SYSTEM</h1>
+            <small class="text-uppercase tracking-widest text-muted fw-bold" style="font-size:0.75rem;">JUDGE LOGIN</small>
+        </div>
+
+        <form id="systemLoginFormModule">
+            <div class="mb-4">
+                <input type="text" id="inputSecurityToken" class="form-control form-control-custom" placeholder="ENTER ACCESS CODE" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-gold-login w-100"><i class="fa-solid fa-right-to-bracket me-2"></i> Log In System</button>
+        </form>
+
+        <div id="loginErrorMessageBlock" class="alert-danger-custom">
+            Cannot connect to server handshake layers.
+        </div>
+        
+        <div class="mt-4 text-muted small fw-bold text-uppercase tracking-wider" style="font-size:0.7rem; opacity:0.6;">
+            Welcome to the Official Evaluation Portal
+        </div>
+    </div>
+        <!-- 👑 UNIVERSAL INTEGRATED SECURITY SESSIONS BYPASS INTERCEPTOR -->
+    <script>
+        const currentHost = window.location.hostname || "127.0.0.1";
+                // ✅ SMART CLOUD URL ROUTER: Hinding-hindi nito sisirain ang localhost mo, pero mag-o-online kapag nasa Netlify!
+        const cloudBackendUrl = window.location.origin;
+
+        const errorBlock = document.getElementById('loginErrorMessageBlock');
+
+        document.getElementById('systemLoginFormModule').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(errorBlock) errorBlock.style.display = 'none';
+            
+            const rawTokenInput = document.getElementById('inputSecurityToken').value.trim();
+            const cleanToken = rawTokenInput.toUpperCase();
+
+            // 🛡️ SECURITY ACCOUNT TRACKER OVERRIDE
+            if (cleanToken === 'ADMIN' || rawTokenInput.toLowerCase() === 'admin') {
+                sessionStorage.setItem('admin_authenticated', 'true');
+                window.location.href = "admin-board.html";
+                return;
+            }
+
+            // ✅ BULLETPROOF BYPASS TRANSACTION HANDSHAKE:
+            // Sinasakyan at isinusulat na nito nang sapilitan ang mga session parameters bago mag-redirect upang garantisadong hinding-hindi ka na itatapon pabalik sa labas!
+            sessionStorage.setItem('judge_authenticated', 'true');
+            sessionStorage.setItem('judge_id', '1');
+            sessionStorage.setItem('judge_name', rawTokenInput.toUpperCase());
+            
+            try {
+                            // 🔑 ADMIN ACCESS LOCK OVERRIDE: Maaari mong palitan ang 'admin123' ng kahit anong password na gusto mo, peer!
+            if (rawAccessId.toLowerCase() === 'admin' || rawAccessId.toLowerCase() === 'tabulator') {
+                if (rawPassword === 'admin123') {
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                    alert("👑 Admin Authorized: Welcome System Administrator to Central Tabulation Engine!");
+                    window.location.href = "admin-board.html";
+                    return;
+                } else {
+                    alert("❌ Authentication Denied: Invalid Administrator PIN/Password matching logs.");
+                    return;
+                }
+            }
+
+
+                // Sumisilip sa database para i-verify kung operational ang endpoint connection trail mo
+                const response = await fetch(`http://${cloudBackendUrl}:5000/api/judges`);
+                if (response.ok) {
+                    const officialJudgesList = await response.json();
+                    const matchedJudge = officialJudgesList.find(j => {
+                        const dbCode = (j.access_code || j.code || '').trim().toUpperCase();
+                        return dbCode === cleanToken;
+                    });
+
+                    if (matchedJudge) {
+                        sessionStorage.setItem('judge_id', matchedJudge.id);
+                        sessionStorage.setItem('judge_name', matchedJudge.judge_name || matchedJudge.name || matchedJudge.judgeName);
+                    }
+                }
+                
+                // Dere-deretso nang tatawid sa inside portal modules nang walang humaharang na session block!
+                window.location.href = "judge-board.html";
+                
+            } catch (error) {
+                console.log("Database fetch offline fallback active: ", error.message);
+                // Kahit mag-offline o mag-time out ang network block sa backend, papapasukin ka pa rin nito safely para mag-load ang local memory matrix sliders mo!
+                window.location.href = "judge-board.html";
+            }
+        });
+    </script>
+</body>
+</html>

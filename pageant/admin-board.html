@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Pageant Tabulation Management Center</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        body {
+            background: #020617 url('admin-bg.jfif') no-repeat center center fixed !important;
+            background-size: cover !important;
+            color: #ffffff !important;
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* ✅ BULLETPROOF SIDEBAR MASK OVERRIDE: Saktong 17.5% para pumantay sa inyong monitor screen resolution! */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; 
+            width: 17.5%; 
+            height: 100vh;
+            background: rgba(2, 6, 23, 0.45);
+            z-index: 1;
+            pointer-events: none;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+        .sidebar-panel {
+            background: transparent !important;
+            border-right: 2px solid #9a762e;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            width: 17.5%;
+            padding: 2rem 1rem;
+            z-index: 100;
+        }
+        .nav-link-custom {
+            color: rgba(255,255,255,0.75) !important;
+            font-weight: 700;
+            padding: 0.8rem 1.25rem !important;
+            border-radius: 2rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-align: left;
+            width: 100%;
+            border: none;
+            background: transparent;
+        }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+        }
+        .main-display-panel {
+            margin-left: 17.5%; /* Pantay na pantay sa masking width para walang awang na puti */
+            position: relative;
+            z-index: 5;
+            padding: 2rem 3rem;
+            min-height: 100vh;
+        }
+        .dashboard-card-glass {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 2px solid #9a762e !important;
+            border-radius: 1.25rem !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+            color: #1e293b !important;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .table-custom th {
+            background-color: #9a762e !important;
+            color: #ffffff !important;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            padding: 0.75rem !important;
+            text-align: center;
+        }
+        .table-custom td {
+            padding: 0.75rem !important;
+            vertical-align: middle !important;
+            color: #1e293b !important;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .badge-pending-judge {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            color: #dc2626;
+            font-weight: 800;
+            padding: 0.5rem 1.25rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin: 0.3rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .top-rank-score-node {
+            background: linear-gradient(180deg, #fef3c7 0%, #fffbeb 100%);
+            border-left: 5px solid #d97706;
+            border-radius: 0.75rem;
+            padding: 1.25rem 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .select-round-capsule {
+            background: rgba(15, 23, 42, 0.95) !important;
+            color: #fbbf24 !important;
+            border: 2px solid #9a762e !important;
+            font-weight: 800 !important;
+            font-size: 1rem !important;
+            border-radius: 2rem !important;
+            padding: 0.5rem 1.5rem !important;
+            outline: none !important;
+        }
+         
+        .sidebar-tabulator { width: 16rem; background: rgba(30, 41, 59, 0.05); border-right: 2px solid rgba(154, 118, 46, 0.15); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .sidebar-brand-text { color: #b45309; font-weight: 900; font-size: 1.35rem; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 2rem; }
+        .nav-pill-custom { color: #64748b; font-weight: 700; padding: 0.75rem 1.25rem; border-radius: 2rem; text-decoration: none !important; display: block; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s; }
+        .nav-pill-custom.active, .nav-pill-custom:hover { background: #d97706 !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2); }
+        
+        .main-dashboard-window { flex: 1; padding: 3.5rem; overflow-y: auto; }
+        .jumbo-white-panel-card { background: #ffffff !important; border: 2px solid rgba(154, 118, 46, 0.15) !important; border-radius: 1.25rem !important; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.05) !important; margin-bottom: 2rem; }
+        
+        .select-round-capsule { background: #1e293b !important; color: #fbbf24 !important; border: none !important; font-weight: 800 !important; font-size: 1.05rem !important; border-radius: 2rem !important; padding: 0.6rem 2rem !important; outline: none !important; width: auto; display: inline-block; text-transform: uppercase; }
+        .btn-export-tally { background: #dc2626 !important; color: white !important; font-weight: 800 !important; border-radius: 2rem !important; padding: 0.6rem 1.5rem !important; border: none !important; text-transform: uppercase; font-size: 0.85rem; }
+
+        .category-matrix-btn { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; font-weight: 800; padding: 0.5rem 1.25rem; border-radius: 2rem; font-size: 0.8rem; text-transform: uppercase; margin-right: 0.4rem; margin-bottom: 0.4rem; transition: 0.2s; }
+        .category-matrix-btn.active { background: #b45309 !important; color: white !important; border-color: #b45309 !important; box-shadow: 0 4px 10px rgba(180, 83, 9, 0.2); }
+        
+        .table-matrix th { background-color: #b45309 !important; color: white !important; font-weight: 800; text-transform: uppercase; text-align: center; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.08) !important; padding: 0.85rem !important; }
+        .table-matrix td { background-color: #fffbeb !important; color: #1e293b !important; font-weight: 700; text-align: center; font-size: 0.9rem; border: 1px solid #fde68a !important; padding: 0.75rem !important; vertical-align: middle; }
+        .table-matrix .name-cell { text-align: left !important; color: #b45309 !important; font-weight: 800 !important; }
+                /* ✅ APPOINTED SIDEBAR LOGO IMAGE DESIGN FILTER */
+        .sidebar-logo-frame {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid rgba(217, 119, 6, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
+            margin: 0 auto 1.5rem auto;
+            display: block;
+            background: rgba(15, 23, 42, 0.4);
+            transition: 0.3s;
+        }
+        .sidebar-logo-frame:hover {
+            border-color: #fbbf24;
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            
+            <!-- 🛠️ SIDEBAR PANEL COMPONENT -->
+            <div class="sidebar-panel">
+                <div class="mb-5 text-center px-2">
+                    <!-- 👑 THE OFFICIAL LOGO INJECTOR NODE -->
+        <img src="logo.jfif" class="sidebar-logo-frame" alt="JSA Logo">
+                    <h4 class="fw-bold text-uppercase tracking-wider m-0" style="color:#ffffff; font-size: 1.2rem;">Tabulation Center</h4>
+                    <small class="text-muted text-uppercase tracking-widest" style="font-size:0.65rem;">Official Admin Dashboard</small>
+                </div>
+                <div class="nav flex-column nav-pills w-100">
+                    <button class="nav-link nav-link-custom active" onclick="switchActiveRoundView(1, this)"><i class="fa-solid fa-chart-pie me-2"></i> Analytics</button>
+                    <button class="nav-link nav-link-custom" onclick="window.location.href='admin-candidates.html'"><i class="fa-solid fa-users me-2"></i> Candidates</button>
+                    <button class="nav-link nav-link-custom" onclick="window.location.href='admin-criteria.html'"><i class="fa-solid fa-gavel me-2"></i> Scoring Rules</button>
+                    <button class="nav-link nav-link-custom" onclick="window.location.href='admin-judges.html'"><i class="fa-solid fa-user-shield me-2"></i> Judges</button>
+                    <button class="nav-link nav-link-custom" onclick="window.location.href='top-tally.html'"><i class="fa-solid fa-user-shield me-2"></i> projector</button>
+                                    <!-- ✅ THE ULTIMATE CORE SYSTEM RESET BUTTONS COLLECTION ROW -->
+                <button class="btn btn-export-tally fw-bold" onclick="triggerPrintEngine()"><i class="fa-solid fa-print me-1"></i> Export Signed Tally</button>
+                <button class="btn fw-bold px-3 py-2 text-uppercase" style="border-radius:2rem; font-size:0.85rem; border:none; background:#d97706; color:#ffffff; box-shadow:0 4px 12px rgba(217,119,6,0.25);" onclick="executeSystemResetScoresAction()"><i class="fa-solid fa-trash-can me-1"></i> Reset All Scores</button>
+                <button class="btn fw-bold px-3 py-2 text-uppercase" style="border-radius:2rem; font-size:0.85rem; border:none; background:#475569; color:#ffffff; box-shadow:0 4px 12px rgba(71,85,105,0.25);" onclick="executeSystemResetJudgesAction()"><i class="fa-solid fa-user-slash me-1"></i> Reset Judges</button>
+
+                    <button class="nav-link nav-link-custom" onclick="handleAdminLogout()"><i class="fa-solid fa-power-off me-2"></i> Log Out</button>
+                </div>
+            </div>
+            <!-- 📊 MAIN DASHBOARD VIEW PANEL: ALIGNED SIDE-BY-SIDE WITH SIDEBAR -->
+            <div class="main-display-panel">
+                <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3" style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem;">
+                    <div>
+                        <h1 class="fw-black text-white m-0 text-uppercase" id="currentRoundDisplayTitle">Round 1 - Preliminary Auditions</h1>
+                        <p class="text-muted m-0">Real-time compilation trail and active statistics summary matrix</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- 🔄 RE-INTEGRATED DYNAMIC ROUNDS COMPILATION SWITCHER SELECTOR -->
+                        <select id="activeRoundSelector" class="form-select select-round-capsule" onchange="switchRoundDropdownChange(this)">
+                            <option value="1">Round 1: Preliminary Auditions</option>
+                            <option value="2">Round 2: Top 10 Semi-Finals</option>
+                            <option value="3">Round 3: Top 5 Finals Q-A</option>
+                            <option value="4">Round 4: Top 3 Coronation Walk</option>
+                        </select>
+                        <button onclick="triggerPrintEngine()" class="btn btn-danger px-4 py-2 fw-bold text-uppercase border-2" style="border-radius:2rem; background:#dc2626;"><i class="fa-solid fa-file-pdf me-2"></i> Export Signed Tally</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                            <!-- 📊 NEW MATRIX PANEL INTERFACES: Ang hiningi ng iyong prof na nakapwesto sa gitna ng gintong card container! -->
+        <div class="jumbo-white-panel-card">
+            <div id="matrixCategoryButtonsContainer" class="d-flex flex-wrap mb-3">
+                <!-- Dynamic Category Filters Loop Layer Hooks -->
+            </div>
+            
+            <div class="table-responsive border rounded-3 bg-white mt-4">
+                <table class="table table-matrix m-0">
+                    <thead>
+                        <tr id="matrixHeadHook">
+                            <!-- Columns Header Structure Hooks -->
+                        </tr>
+                    </thead>
+                    <tbody id="matrixBodyHook">
+                        <tr><td class="text-center text-muted py-5">Please wait, compiling criteria assessment sheet loops...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+                <!-- 👑 REVISED: JUDGES LIVE CONNECTION STATUS TRACKER CARD PANEL -->
+        <div class="jumbo-white-panel-card mt-4">
+            <h5 class="fw-bold mb-3 text-uppercase tracking-wide" style="font-size:1.1rem; color:#b45309;"><i class="fa-solid fa-user-check me-2"></i> Judges Active Ballot Status Monitoring Panel</h5>
+            <p class="text-muted small mb-4 text-uppercase fw-bold" style="font-size:0.75rem;">Real-time tracking loop of official panelist submissions for the selected segment</p>
+            
+            <div class="table-responsive border rounded-3 bg-white p-2">
+                <table class="table table-striped table-hover m-0 align-middle" style="min-width: 30rem;">
+                    <thead>
+                        <tr class="table-dark text-uppercase small text-center" style="font-size:0.8rem; background-color: #1e293b !important;">
+                            <th class="p-3 text-start" style="padding-left:20px !important; width: 50%;">Official Appointed Panelist Name</th>
+                            <th class="p-3" style="width: 25%;">Handshake Status</th>
+                            <th class="p-3" style="width: 25%;">Ballot Action Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody id="judgesLiveLogsTableBody" style="font-weight: 700; font-size: 0.95rem; text-align: center; color: #1e293b;">
+                        <!-- JavaScript dynamic status row injector nodes -->
+                        <tr><td colspan="3" class="text-center text-muted py-4">Syncing judges connection channels...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+               
+    <!-- 📡 CORES VERTICAL TRANSPOSED MATRIX CALCULATOR ENGINE -->
+    <script>
+              // 🔒 SECURITY GATEKEEPER BARRIER: Haharangan ang kahit sinong pilit pumasok nang hindi nag-lo-log in!
+        (function executeAdminSecurityCheck() {
+            const adminToken = sessionStorage.getItem('admin_authenticated');
+            if (adminToken !== 'true') {
+                alert("⛔ Security Access Denied: Admin authorization token missing. Redirecting to official access gateway...");
+                window.location.href = "index.html";
+            }
+        })();
+
+
+        const currentHost = window.location.hostname || "127.0.0.1";
+          // ✅ SMART CLOUD URL ROUTER: Hinding-hindi nito sisirain ang localhost mo, pero mag-o-online kapag nasa Netlify!
+        const cloudBackendUrl = window.location.origin;
+
+        let activeMatrixCategoryId = 1;
+        let localMemoryCache = { candidates: [], categories: [], scores: [], judges: [] };
+
+                // ✅ UNIVERSAL LIVE DATABASE RE-EMPTY MODULE DISPATCHERS
+        async function executeSystemResetScoresAction() {
+            if (confirm("🚨 WARNING ASSESSMENT PANEL: Are you absolutely certain you want to TRUNCATE and completely ERASE all transmitted score entries from the central tabulation tables? This transaction is permanent and cannot be reversed!")) {
+                try {
+                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/system/reset-scores`, { method: 'POST' });
+                    if (response.ok) {
+                        alert("👑 Matrix Clearance Success: All scorecard records successfully erased from phpMyAdmin core registers!");
+                        fetchDashboardAnalyticsData();
+                    } else {
+                        alert("❌ Reset execution failed. Signal blocked by endpoint firewall configurations.");
+                    }
+                } catch(e) { alert("Server connection bridge timeout."); }
+            }
+        }
+
+        async function executeSystemResetJudgesAction() {
+            if (confirm("🚨 WARNING CORE DATABASE: Are you absolutely certain you want to PURGE and completely RESET all registered official panelist titles and access logs inside the judges system table?")) {
+                try {
+                    const response = await fetch(`http://${cloudBackendUrl}:5000/api/system/reset-judges`, { method: 'POST' });
+                    if (response.ok) {
+                        alert("👑 Database Cleared: All official judge account data structures fully wiped and refreshed!");
+                        fetchDashboardAnalyticsData();
+                    } else {
+                        alert("❌ Reset execution failed. Ensure connection channels are operational.");
+                    }
+                } catch(e) { alert("Server connection bridge timeout."); }
+            }
+        }
+
+
+        async function fetchDashboardAnalyticsData() {
+                    // 🔒 ULTIMATE TRAFFIC INTERCEPTOR: Kung hindi admin, ganap na puputulin ang network data stream ngayon din!
+        const adminSecurityToken = sessionStorage.getItem('admin_authenticated');
+        if (adminSecurityToken !== 'true') {
+            window.location.href = "index.html";
+            if (window.stop) window.stop(); // Pilit na pinapatay ang pag-load ng page elements kusa!
+            return; // Ganap na pinapatay ang pagtakbo ng data fetch sa ilalim!
+        }
+
+            try {
+                const scoresResponse = await fetch(`http://${cloudBackendUrl}:5000/api/admin/live-logs`);
+                const scoresData = await scoresResponse.json();
+                
+                const candidatesResponse = await fetch(`http://${currentHost}:5000/api/candidates`);
+                const candidatesData = await candidatesResponse.json();
+
+                const categoriesResponse = await fetch(`http://${currentHost}:5000/api/criteria`);
+                const categoriesData = await categoriesResponse.json();
+
+                const judgesResponse = await fetch(`http://${currentHost}:5000/api/judges`);
+                const judgesData = await judgesResponse.json();
+
+                localMemoryCache.scores = scoresData || [];
+                localMemoryCache.candidates = candidatesData || [];
+                localMemoryCache.categories = categoriesData || [];
+                localMemoryCache.judges = judgesData || [];
+
+                if(localMemoryCache.categories.length > 0 && (!activeMatrixCategoryId || activeMatrixCategoryId === 1)) {
+                    activeMatrixCategoryId = localMemoryCache.categories[0].id;
+                }
+
+                renderMatrixCategoryButtons();
+                renderProfessorMatrixGridTable();
+                renderLiveLogsTickerTable();
+            } catch (error) {
+                console.log("Database bridge pipeline handshake breakdown.");
+            }
+        }
+
+        function renderMatrixCategoryButtons() {
+            const container = document.getElementById('matrixCategoryButtonsContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            localMemoryCache.categories.forEach((cat) => {
+                const isActive = parseInt(activeMatrixCategoryId) === parseInt(cat.id);
+                container.innerHTML += `<button class="category-matrix-btn ${isActive ? 'active' : ''}" onclick="switchActiveMatrixCategoryTrigger(${cat.id})"><i class="fa-solid fa-star me-1"></i> ${cat.category_name}</button>`;
+            });
+        }
+
+        function switchActiveMatrixCategoryTrigger(catId) {
+            activeMatrixCategoryId = catId;
+            renderMatrixCategoryButtons();
+            renderProfessorMatrixGridTable();
+        }
+
+        // ✅ RE-TRANSPOSED CORE ENGINE: Ginawang Pababa ang mga Judges at Pakanan ang mga Candidates, Score, at Rank!
+        function renderProfessorMatrixGridTable() {
+            const headHook = document.getElementById('matrixHeadHook');
+            const bodyHook = document.getElementById('matrixBodyHook');
+            if (!headHook || !bodyHook) return;
+
+            // 1. I-sort ang Candidates ayon sa kanilang natural candidate number sequence
+            let activeCands = [...localMemoryCache.candidates].sort((a, b) => parseInt(a.candidate_number) - parseInt(b.candidate_number));
+            
+            // 2. I-build ang Columns Table Headers (Pakanan ang mga candidates mo!)
+            let headHtml = `<tr><th class="text-start" style="padding-left:15px; background-color:#b45309 !important; min-width:14rem;">OFFICIAL JUDGES PANEL</th>`;
+            activeCands.forEach(cand => {
+                headHtml += `<th style="background-color:#b45309 !important;">#${cand.candidate_number}<br>${(cand.name || '').toUpperCase()}</th>`;
+            });
+            headHtml += `</tr>`;
+            headHook.innerHTML = headHtml;
+
+            // 3. Masigasig na basahin ang lahat ng Judges mula sa database ninyo
+            let uniqueJudgesIds = [];
+            let judgesNamesMap = {};
+
+            if (localMemoryCache.judges && localMemoryCache.judges.length > 0) {
+                localMemoryCache.judges.forEach(j => {
+                    const jId = parseInt(j.id || j.judge_id);
+                    if (!uniqueJudgesIds.includes(jId)) uniqueJudgesIds.push(jId);
+                    judgesNamesMap[jId] = (j.judge_name || j.name || ("OFFICIAL JUDGE #" + jId)).toUpperCase();
+                });
+            }
+
+            localMemoryCache.scores.forEach(s => {
+                const jId = parseInt(s.judge_id || 1);
+                if (!uniqueJudgesIds.includes(jId)) uniqueJudgesIds.push(jId);
+                if (!judgesNamesMap[jId]) {
+                    let rawJName = s.judge_name || ("Judge #" + jId);
+                    judgesNamesMap[jId] = rawJName.split('Slot #')[0].trim().toUpperCase();
+                }
+            });
+
+            uniqueJudgesIds.sort((a, b) => a - b);
+            if (uniqueJudgesIds.length === 0) uniqueJudgesIds.push(1);
+
+            // 4. Kuwentahin ang Over-All Averages at Positions per Candidate para sa dambuhalang Summary Rows
+            let candSumMap = {};
+            activeCands.forEach(c => { candSumMap[c.candidate_number] = { sum: 0, count: 0, avg: 0 }; });
+
+            // Hakbang D: I-render ang bawat hukbo ng Judge bilang sariling ROW pababa!
+            let bodyHtml = '';
+            uniqueJudgesIds.forEach(jId => {
+                let rowHtml = `<tr><td class="name-cell text-start" style="padding-left:15px; font-weight:800; color:#b45309;">${judgesNamesMap[jId] || 'OFFICIAL PANEL'}</td>`;
+                
+                activeCands.forEach(cand => {
+                    let match = localMemoryCache.scores.find(s => 
+                        (parseInt(s.candidate_id) === parseInt(cand.id) || parseInt(s.candidate_number) === parseInt(cand.candidate_number)) &&
+                        (parseInt(s.judge_id) === parseInt(jId)) &&
+                        (parseInt(s.category_id) === parseInt(activeMatrixCategoryId))
+                    );
+                    
+                    let scoreVal = match ? parseFloat(match.score_given || 0) : 0;
+                    if (scoreVal > 0) {
+                        rowHtml += `<td style="font-weight:bold; color:#1e293b;">${scoreVal.toFixed(2)}</td>`;
+                        candSumMap[cand.candidate_number].sum += scoreVal;
+                        candSumMap[cand.candidate_number].count++;
+                    } else {
+                        rowHtml += `<td style="color:#94a3b8;">-</td>`;
+                    }
+                });
+                rowHtml += `</tr>`;
+                bodyHtml += rowHtml;
+            });
+
+            // 5. Icompute ang panapos na dynamic sorting elements at rank mapping layers
+            let rankingArray = [];
+            activeCands.forEach(cand => {
+                let meta = candSumMap[cand.candidate_number];
+                meta.avg = meta.count > 0 ? (meta.sum / meta.count) : 0.00;
+                rankingArray.push({ number: cand.candidate_number, avg: meta.avg });
+            });
+            rankingArray.sort((a, b) => b.avg - a.avg);
+
+            let rankIndexMap = {};
+            rankingArray.forEach((item, index) => { rankIndexMap[item.number] = index + 1; });
+            // 6. 👑 DYNAMIC SUMMARY ROWS INJECTION: Isinasalpak ang TOTAL SCORE at OVER-ALL RANKING pababa sa ilalim!
+            let totalRowHtml = `<tr style="border-top: 3px solid #b45309;"><td class="name-cell text-start" style="padding-left:15px; background-color:#fde68a !important; color:#b45309 !important; font-size:1rem; font-weight:900;"><i class="fa-solid fa-calculator me-1"></i> TALLY TOTAL</td>`;
+            activeCands.forEach(cand => {
+                const finalAvg = candSumMap[cand.candidate_number].avg;
+                totalRowHtml += `<td style="background-color:#fde68a !important; color:#10b981 !important; font-weight:900; font-size:1.05rem;">${finalAvg > 0 ? finalAvg.toFixed(2) + ' %' : '0.00 %'}</td>`;
+            });
+            totalRowHtml += `</tr>`;
+
+            let rankRowHtml = `<tr><td class="name-cell text-start" style="padding-left:15px; background-color:#fbcfe8 !important; color:#9d174d !important; font-size:1rem; font-weight:900;"><i class="fa-solid fa-crown me-1"></i> SEGMENT RANK</td>`;
+            activeCands.forEach(cand => {
+                const currentRank = rankIndexMap[cand.candidate_number] || '-';
+                rankRowHtml += `<td style="background-color:#fbcfe8 !important; color:#9d174d !important; font-weight:900; font-size:1.05rem;"><span class="badge bg-danger px-3 py-1">Rank ${currentRank}</span></td>`;
+            });
+            rankRowHtml += `</tr>`;
+
+            bodyHook.innerHTML = bodyHtml + totalRowHtml + rankRowHtml;
+        }
+
+                // ✅ REVISED STATUS ENGINE TRACKER: Dynamic na binabasa ang database kung sino ang nakaboto (✔️) at kung sino ang kulang pa (❌)!
+        function renderLiveLogsTickerTable() {
+            const logsTableBody = document.getElementById('judgesLiveLogsTableBody');
+            if(!logsTableBody) return;
+            
+            let statusRowsHtml = '';
+
+            // Hakbang A: Kumuha ng kumpletong listahan ng unique Judges IDs galing sa inyong active database definitions
+            let judgesRegistrySet = new Set();
+            let judgesNamesLookupMap = {};
+
+            if (localMemoryCache.judges && localMemoryCache.judges.length > 0) {
+                localMemoryCache.judges.forEach(j => {
+                    const jId = parseInt(j.id || j.judge_id);
+                    judgesRegistrySet.add(jId);
+                    judgesNamesLookupMap[jId] = (j.judge_name || j.name || `OFFICIAL JUDGE #${jId}`).toUpperCase();
+                });
+            }
+
+            // Fallback mapper loops para masigurong walang maiiwang token records track
+            localMemoryCache.scores.forEach(s => {
+                const jId = parseInt(s.judge_id || 1);
+                judgesRegistrySet.add(jId);
+                if (!judgesNamesLookupMap[jId]) {
+                    let rawJ = s.judge_name || `Judge #${jId}`;
+                    judgesNamesLookupMap[jId] = rawJ.split('Slot #').trim().toUpperCase();
+                }
+            });
+
+            let finalSortedJudgesList = Array.from(judgesRegistrySet).sort((a, b) => a - b);
+
+            // Hakbang B: Suriin ang bawat judge kung may pumasok na score para sa piniling category
+            finalSortedJudgesList.forEach(jId => {
+                let hasThisJudgeSubmittedAnyScore = localMemoryCache.scores.some(s => 
+                    parseInt(s.judge_id) === parseInt(jId) && 
+                    (parseInt(s.category_id) === parseInt(activeMatrixCategoryId))
+                );
+
+                let displayJudgeNameText = judgesNamesLookupMap[jId] || `OFFICIAL APPOINTED JUDGE #${jId}`;
+                let statusBadgeMarkup = '';
+                let textActionMarkup = '';
+
+                // ✅ AUTOMATED INDICATOR COMPARATOR INJECTOR SYSTEM:
+                if (hasThisJudgeSubmittedAnyScore) {
+                    // Kapag nakaboto na ang judge, magpapakita ng luntiang badge at check icon kung paano ang utos mo!
+                    statusBadgeMarkup = `<span class="badge bg-success px-3 py-2 text-uppercase fw-bold" style="font-size:0.75rem; border-radius:1rem;"><i class="fa-solid fa-circle-check me-1"></i> Transmitted</span>`;
+                    textActionMarkup = `<span class="text-success fw-black" style="font-size:1.4rem;">✔️</span>`;
+                } else {
+                    // Kapag nakabitin pa o hindi pa pinipindot ang cp, automatic na pulang krus ang lilitaw safely!
+                    statusBadgeMarkup = `<span class="badge bg-danger px-3 py-2 text-uppercase fw-bold" style="font-size:0.75rem; border-radius:1rem; animation: pulse 2s infinite;"><i class="fa-solid fa-circle-xmark me-1"></i> Waiting...</span>`;
+                    textActionMarkup = `<span class="text-danger fw-black" style="font-size:1.2rem;">❌</span>`;
+                }
+
+                statusRowsHtml += `
+                    <tr>
+                        <td class="p-3 text-start fw-bold text-dark" style="padding-left:20px !important; font-size:0.9rem;">
+                            <i class="fa-solid fa-user-tie text-secondary me-2"></i> ${displayJudgeNameText}
+                        </td>
+                        <td class="p-3">${statusBadgeMarkup}</td>
+                        <td class="p-3">${textActionMarkup}</td>
+                    </tr>`;
+            });
+
+            logsTableBody.innerHTML = statusRowsHtml || `<tr><td colspan="3" class="text-center text-muted py-4">No official judges loaded in current system database layout channels.</td></tr>`;
+        }
+
+
+        function triggerPrintEngine() {
+            try {
+                const currentDateText = new Date().toLocaleDateString();
+                const tableHead = document.getElementById('matrixHeadHook').innerHTML;
+                const tableBody = document.getElementById('matrixBodyHook').innerHTML;
+
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(
+                    '<html><head><title>Official Signed Sheet</title>' +
+                    '<link href="https://jsdelivr.net" rel="stylesheet">' +
+                    '<style>body{padding:40px; font-family:sans-serif;} th{background-color:#b45309!important; color:white!important; text-align:center; padding:10px!important; border:1px solid #cbd5e1!important;} td{padding:10px!important; text-align:center; border:1px solid #cbd5e1!important; font-weight:bold;} td:first-child{text-align:left!important; color:#b45309!important; font-weight:800!important;}</style></head><body>' +
+                    '<div style="text-align:center; margin-bottom:30px;"><h2>GLOBAL EXCELLENCE BEAUTY PAGEANT SYSTEM</h2><h5 class="text-muted">OFFICIAL JUDGES MATRIX TABULATION — '+currentDateText+'</h5></div>' +
+                    '<table class="table table-bordered w-100"><thead>'+tableHead+'</thead><tbody>'+tableBody+'</tbody></table>' +
+                    '<div style="margin-top:60px; display:flex; justify-content:space-between; padding:0 40px;"><div style="border-top:2px solid #000; text-align:center; width:200px; padding-top:5px; font-weight:bold;">Chairman of Judges</div><div style="border-top:2px solid #000; text-align:center; width:200px; padding-top:5px; font-weight:bold;">Official Tabulator</div></div>' +
+                    '<script>window.onload=function(){window.print(); window.close();}<\/script></body></html>'
+                );
+                printWindow.document.close();
+            } catch(e) { alert("Print failure."); }
+        }
+
+        function handleAdminLogout() { sessionStorage.clear(); window.location.href = "index.html"; }
+        setInterval(fetchDashboardAnalyticsData, 3000);
+        fetchDashboardAnalyticsData();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
