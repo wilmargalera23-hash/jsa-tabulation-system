@@ -165,7 +165,7 @@
 
 
                 // Sumisilip sa database para i-verify kung operational ang endpoint connection trail mo
-                const response = await fetch(`http://${cloudBackendUrl}:5000/api/judges`);
+                const response = await fetch(`${cloudBackendUrl}/api/judges`);
                 if (response.ok) {
                     const officialJudgesList = await response.json();
                     const matchedJudge = officialJudgesList.find(j => {
