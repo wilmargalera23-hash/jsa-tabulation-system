@@ -288,7 +288,7 @@ app.post('/api/system/reset-judges', async (req, res) => {
 });
 
 
-const PORT = 5000;
+const PORT = process.env.Port || 5000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Tabulation Backend Server Core Engine broadcasting securely across WiFi network on port ${PORT}`);
 });
