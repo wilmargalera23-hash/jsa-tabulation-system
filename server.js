@@ -140,6 +140,39 @@ app.get(['/api/admin/live-logs', '/admin/live-logs'], async (req, res) => {
     }
 });
 
+// ✅ CLOUD CANDIDATE REGISTRATION RECEIVER MODULE:
+// Sinasalo ang bagong kandidata galing Netlify at permanenteng isinusulat sa Aiven cloud database!
+app.post(['/api/candidates', '/candidates'], async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    try {
+        const { candidate_number, name, representation } = req.body;
+        
+        if (!candidate_number || !name) {
+            return res.status(400).send("Missing required parameters entry.");
+        }
+
+        // Titingnan kung registered na ang slot number na ito sa system
+        const [exist] = await db.execute("SELECT id FROM candidates WHERE candidate_number = ?", [parseInt(candidate_number)]);
+        
+        if (exist && exist.length > 0) {
+            // Kung may kaparehong number, automatic na i-u-update ang pangalan at lugar
+            await db.execute("UPDATE candidates SET name = ?, representation = ? WHERE candidate_number = ?", [name.toUpperCase(), representation.toUpperCase(), parseInt(candidate_number)]);
+            console.log(`📝 Cloud Records Updated: Slot # ${candidate_number} modified successfully!`);
+        } else {
+            // Kung bago ang slot number, pormal na isasaksak sa MySQL database columns table kusa
+            await db.execute("INSERT INTO candidates (name, candidate_number, representation) VALUES (?, ?, ?)", [name.toUpperCase(), parseInt(candidate_number), representation.toUpperCase()]);
+            console.log(`👑 Cloud Records Registered: ${name.toUpperCase()} successfully secured!`);
+        }
+        
+        if (typeof io !== 'undefined') io.emit('score_updated'); // Auto-update sa graphics panel kung gumagamit ng sockets logs
+        return res.sendStatus(200);
+    } catch (error) {
+        console.log("⚠️ Candidate registry pipeline error: ", error.message);
+        return res.status(500).send(error.message);
+    }
+});
+
+
 app.post(['/api/scores', '/scores'], async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     try {
