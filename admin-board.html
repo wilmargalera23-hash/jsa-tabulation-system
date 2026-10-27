@@ -314,7 +314,7 @@
                 const candidatesResponse = await fetch(`${cloudBackendUrl}/api/candidates`);
                 const candidatesData = await candidatesResponse.json();
 
-                const categoriesResponse = await fetch(`{cloudBackendUrl}/api/criteria`);
+                const categoriesResponse = await fetch(`${cloudBackendUrl}/api/criteria`);
                 const categoriesData = await categoriesResponse.json();
 
                 const judgesResponse = await fetch(`${cloudBackendUrl}/api/judges`);
