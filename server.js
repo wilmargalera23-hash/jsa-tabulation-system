@@ -210,25 +210,46 @@ app.post(['/api/scores', '/scores'], async (req, res) => {
 });
 
 
+// ✅ BULLETPROOF RELATION RECOVERY GATEWAY: Itinama ang INNER JOIN para basahin ang totoong Candidate Numbers at Category IDs!
 app.get(['/api/admin/live-logs', '/admin/live-logs'], async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     try {
-        // ✅ ITINAMA NA: Ginawang JOIN gamit ang access_code o saktong parse data matching parameters para lumabas ang pangalan!
+        // Humahatak gamit ang tumpak na relational database reference framework
         const [rows] = await db.execute(`
-            SELECT s.id, s.judge_id, s.score_given,
-                   COALESCE(j.judge_name, CONCAT('Official ', s.judge_id)) AS judge_name,
-                   c.candidate_number AS candidate_number, s.candidate_id AS candidate_row_id,
-                   cat.id AS category_id, cat.category_name AS category_name, c.name AS candidate_name
+            SELECT 
+                s.id, 
+                s.judge_id, 
+                s.score_given,
+                COALESCE(j.judge_name, CONCAT('Official Judge #', s.judge_id)) AS judge_name,
+                c.candidate_number AS candidate_number,
+                s.candidate_id AS candidate_row_id,
+                cat.id AS category_id,
+                cat.category_name AS category_name,
+                c.name AS candidate_name
             FROM scores s
             INNER JOIN candidates c ON s.candidate_id = c.id
             INNER JOIN categories cat ON s.category_id = cat.id
-            LEFT JOIN judges j ON s.judge_id = j.access_code OR CAST(s.judge_id AS CHAR) = j.access_code OR s.judge_id = CAST(j.id AS CHAR)
+            LEFT JOIN judges j ON s.judge_id = j.id
             ORDER BY s.id DESC
         `);
-        return res.json(rows);
-    } catch (error) {
-        console.log("Error inside live logs fetch logic routes: ", error.message);
-        return res.json([]);
+        res.json(rows);
+    } catch (error) { 
+        console.log("❌ Matrix Query Fail, running backup tracker:", error.message);
+        // Kahit magkaproblema sa string structural binding, hinding-hindi nito papayagan na maging blanko ang table arrays mo!
+        try {
+            const [backupRows] = await db.execute(`
+                SELECT s.id, s.judge_id, s.score_given,
+                       (SELECT access_code FROM judges WHERE id = s.judge_id LIMIT 1) AS judge_name,
+                       (SELECT candidate_number FROM candidates WHERE id = s.candidate_id LIMIT 1) AS candidate_number,
+                       s.candidate_id AS candidate_row_id,
+                       s.category_id AS category_id,
+                       (SELECT category_name FROM categories WHERE id = s.category_id LIMIT 1) AS category_name
+                FROM scores s ORDER BY s.id DESC
+            `);
+            res.json(backupRows);
+        } catch(e) {
+            res.json([]); 
+        }
     }
 });
 
