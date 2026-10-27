@@ -241,17 +241,17 @@
             try {
                 const loggedInJudge = localStorage.getItem('judge_access_code') || localStorage.getItem('judge_id') || "judge1";
 
-               // ✅ NAITUWD NA: Ipapadala na kung sinong judge talaga ang kasalukuyang nakabukas ang cellphone!
-fetch(`${cloudBackendUrl}/api/scores`, { // O kung ano man ang fetch link mo
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        judge_id: loggedInJudge, // <--- Isinaksak na natin ang variable, wala nang hardcoded '1'!
-        candidate_id: candidateId, // Gamitin mo kung anong variable name ang meron ka dyan
-        category_id: categoryId,
-        score_given: score
-    })
-})
+              const response = await fetch(`http://${cloudBackendUrl}:5000/api/scores`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        judge_id: parseInt(judgeId),
+                        judge_name: `${judgeName} Slot #${candNo}`, 
+                        candidate_id: parseInt(candNo),
+                        category_id: parseInt(targetCatId),
+                        score_given: parseFloat(finalPoints)
+                    })
+                });
 
                 if (response.ok) {
                     // I-lock ang saktong data key block sa browser storage
