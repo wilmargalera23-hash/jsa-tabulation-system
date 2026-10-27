@@ -267,6 +267,7 @@
           // ✅ SMART CLOUD URL ROUTER: Hinding-hindi nito sisirain ang localhost mo, pero mag-o-online kapag nasa Netlify!
         const cloudBackendUrl = "https://jsa-tabulation-system.onrender.com";
 
+
         let activeMatrixCategoryId = 1;
         let localMemoryCache = { candidates: [], categories: [], scores: [], judges: [] };
 
@@ -313,13 +314,13 @@
                 const scoresResponse = await fetch(`${cloudBackendUrl}/api/admin/live-logs`);
                 const scoresData = await scoresResponse.json();
                 
-                const candidatesResponse = await fetch(`${currentHost}/api/candidates`);
+                const candidatesResponse = await fetch(`${cloudBackendUrl}/api/candidates`);
                 const candidatesData = await candidatesResponse.json();
 
-                const categoriesResponse = await fetch(`${currentHost}/api/criteria`);
+                const categoriesResponse = await fetch(`${cloudBackendUrl}/api/criteria`);
                 const categoriesData = await categoriesResponse.json();
 
-                const judgesResponse = await fetch(`${currentHost}/api/judges`);
+                const judgesResponse = await fetch(`${cloudBackendUrl}/api/judges`);
                 const judgesData = await judgesResponse.json();
 
                 localMemoryCache.scores = scoresData || [];
