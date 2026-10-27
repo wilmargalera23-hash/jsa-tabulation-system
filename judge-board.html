@@ -126,7 +126,7 @@
         // Kapag pinindot ang Reset Scores sa Admin, awtomatikong magre-reset ang boto at lockout state sa cp ng judge!
         async function initHandshakeDataFetch() {
             try {
-                const response = await fetch(`http://${cloudBackendUrl}:5000/api/initial-data`);
+                const response = await fetch(`http://${cloudBackendUrl}/api/initial-data`);
                 if(response.ok) {
                     const fetchedData = await response.json();
                     
@@ -238,7 +238,7 @@
             currentBallotVotesData[targetCatId] = finalPoints;
 
             try {
-                const response = await fetch(`http://${cloudBackendUrl}:5000/api/scores`, {
+                const response = await fetch(`http://${cloudBackendUrl}/api/scores`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
