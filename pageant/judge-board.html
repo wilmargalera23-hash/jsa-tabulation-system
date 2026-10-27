@@ -241,7 +241,7 @@
             try {
                 const loggedInJudge = localStorage.getItem('judge_access_code') || localStorage.getItem('judge_id') || "judge1";
 
-              const response = await fetch(`http://${cloudBackendUrl}:5000/api/scores`, {
+              const response = await fetch(`http://${cloudBackendUrl}/api/scores`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
