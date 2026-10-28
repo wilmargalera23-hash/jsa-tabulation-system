@@ -162,11 +162,18 @@ async function initHandshakeDataFetch() {
         renderJudgingInterfaceSheet();
     }
 }
-        // 🖥️ 100% NAITAMA NA: Kinukuha ang tamang HTML container element para mag-render ang candidates cards kusa!
-function renderJudgingInterfaceSheet() {
-    const mainContainer = document.getElementById('judgingContestantsCoreContainer') || document.getElementById('contestantsContainer');
+     function renderJudgingInterfaceSheet() {
+    // ✅ ULTRA-COMPATIBLE CONTAINER LOCATOR: Hahanapin ang lahat ng posibleng id block sa code mo para walang mintis!
+    const mainContainer = document.getElementById('contestantsContainer') || 
+                          document.getElementById('judgingContestantsCoreContainer') || 
+                          document.querySelector('.premium-card') || 
+                          document.body;
+                          
     if (!mainContainer) return;
     mainContainer.innerHTML = "";
+    
+    // ... (Ang lahat ng code sa ilalim nito tulad ng `if (!localMemoryCache.candidates)` ay mananatiling ganyan)
+
 
     if (!localMemoryCache.candidates || localMemoryCache.candidates.length === 0) {
         mainContainer.innerHTML = `<p class="text-center text-muted py-4">No active contestants deployed in the database matrices.</p>`;
