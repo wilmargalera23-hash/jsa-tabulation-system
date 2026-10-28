@@ -227,47 +227,51 @@
 
 
         
-               // ✅ FIXED TRANSACTION CONTROLLER: Pinupuwersa ang system na mag-submit at mag-lock ng isang saktong kategorya lang pababa!
-        async function executeSubmitBallotTransaction(candNo, candidateRowId, targetCatId) {
-            const judgeId = sessionStorage.getItem('judge_id') || 1;
-            const judgeName = sessionStorage.getItem('judge_name') || "Official Judge";
-            
-            const inputNode = document.getElementById(`scoreInput_c${candNo}_cat${targetCatId}`);
-            const finalPoints = inputNode ? parseFloat(inputNode.value) : 75.00;
-            
-            let currentBallotVotesData = {};
-            currentBallotVotesData[targetCatId] = finalPoints;
+              // ✅ KOREK AT KUMPLETONG TRANSAKTYON: Dynamic na kumukuha ng saktong Judge at Candidate IDs!
+async function executeSubmitBallotTransaction(candNo, candidateRowId, targetCatId) {
+    // 1. Itinama: Titingnan sa localStorage at sessionStorage para walang mintis kung sinong Judge ang naka-login
+    const judgeCode = localStorage.getItem('judge_access_code') || sessionStorage.getItem('judge_access_code') || "judge1";
+    const judgeName = localStorage.getItem('judge_name') || sessionStorage.getItem('judge_name') || "Official Judge";
 
-            try {
-               
-              const response = await fetch(`${cloudBackendUrl}/api/scores`); {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        judge_id: parseInt(judgeId),
-                        judge_name: `${judgeName} Slot #${candNo}`, 
-                        candidate_id: parseInt(candNo),
-                        category_id: parseInt(targetCatId),
-                        score_given: parseFloat(finalPoints)
-                    })
-                });
+    const inputNode = document.getElementById(`scoreInput_c${candNo}_cat${targetCatId}`);
+    if (!inputNode) return;
+    
+    const finalPoints = parseFloat(inputNode.value) || 75.00;
 
-                if (response.ok) {
-                    // I-lock ang saktong data key block sa browser storage
-                    let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${targetCatId}_j${judgeId}`;
-                    let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
-                    elementsVotedStateMap[candNo] = currentBallotVotesData;
-                    localStorage.setItem(submittedBallotsKey, JSON.stringify(elementsVotedStateMap));
+    let currentBallotVotesData = {};
+    currentBallotVotesData[targetCatId] = finalPoints;
 
-                    alert("👑 Official ballot token transmitted securely for this specific segment!");
-                    renderJudgingInterfaceSheet();
-                } else {
-                    alert("❌ Transmission breakdown. Check backend connectivity.");
-                }
-            } catch (e) {
-                alert("❌ Transmission breakdown. Ensure node server.js broadcast is active.");
-            }
+    try {
+        const response = await fetch(`${cloudBackendUrl}/api/scores`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                judge_id: judgeCode,            // ✅ ITINAMA: Ipinapadala na ang saktong access token (e.g., 'judge3' o 'judge24')
+                judge_name: judgeName,
+                candidate_id: parseInt(candidateRowId), // ✅ ITINAMA: Gagamitin na ang Database Row ID para mahanap ng Admin dashboard!
+                category_id: parseInt(targetCatId),
+                score_given: parseFloat(finalPoints)
+            })
+        });
+
+        if (response.ok) {
+            // I-lock ang saktong data key block sa browser storage
+            const activeJudgeIdTemp = sessionStorage.getItem('judge_id') || 1;
+            let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${targetCatId}_j${activeJudgeIdTemp}`;
+            let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
+            elementsVotedStateMap[candNo] = currentBallotVotesData;
+            localStorage.setItem(submittedBallotsKey, JSON.stringify(elementsVotedStateMap));
+
+            alert(`👑 Official ballot token transmitted securely for Candidate #${candNo}!`);
+            renderJudgingInterfaceSheet();
+        } else {
+            alert("❌ Transmission breakdown. Check backend connectivity.");
         }
+    } catch (e) {
+        alert("❌ Transmission breakdown. Ensure node server.js broadcast is active.");
+    }
+}
+
 
 
                 function handleRoundChangeTrigger(selector) {
