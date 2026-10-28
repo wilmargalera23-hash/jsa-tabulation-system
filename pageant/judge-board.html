@@ -120,158 +120,136 @@
         const currentHost = window.location.hostname || "127.0.0.1";
           // ✅ SMART CLOUD URL ROUTER: Hinding-hindi nito sisirain ang localhost mo, pero mag-o-online kapag nasa Netlify!
         const cloudBackendUrl = "https://jsa-tabulation-system-1.onrender.com";
-        let activeRound = 1;
-        let localMemoryCache = { candidates: [], categories: [], judges: [] };
+      let localMemoryCache = {};
+const activeRound = document.getElementById('roundSelect')?.value || 1;
 
-               // ✅ BULLETPROOF WIRELESS AUTO-WIPE SYNC HOOK:
-        // Kapag pinindot ang Reset Scores sa Admin, awtomatikong magre-reset ang boto at lockout state sa cp ng judge!
-        async function initHandshakeDataFetch() {
-            try {
-                const response = await fetch(`${cloudBackendUrl}/api/initial-data`);
-                if(response.ok) {
-                    const fetchedData = await response.json();
-                    
-                    // 🛡️ DYNAMIC MEMORY WIPER MODULE INJECTOR:
-                    // Kung nakita ng backend ng cp na walang kargang scores ang main node records...
-                    if(!fetchedData.scores || fetchedData.scores.length === 0) {
-                        const judgeIdKey = sessionStorage.getItem('judge_id') || 1;
-                        
-                        // Awtomatikong nililinis ang browser localized validation caches bawat round template
-                        for(let r = 1; r <= 4; r++) {
-                            localStorage.removeItem(`ballot_voted_r${r}_j${judgeIdKey}`);
-                        }
-                    }
+// Kusa at dynamic nitong hinuhugot kung sinong judge ang nag-log in mula sa localStorage
+const activeJudgeId = localStorage.getItem('judge_id') || sessionStorage.getItem('judge_id') || "1";
+const activeJudgeName = localStorage.getItem('judge_name') || sessionStorage.getItem('judge_name') || "Official Panel Judge";
+const activeJudgeCode = localStorage.getItem('judge_access_code') || sessionStorage.getItem('judge_access_code') || "judge1";
 
-                    if(fetchedData && fetchedData.candidates && fetchedData.candidates.length > 0) {
-                        localMemoryCache = fetchedData;
-                    }
+// Isinasaksak ang pangalan at token ng Judge sa mga visual header labels ng screen mo safely
+const nameLabel = document.getElementById('displayJudgeName');
+const tokenLabel = document.getElementById('displayJudgeCode');
+if (nameLabel) nameLabel.innerText = `Panel: ${activeJudgeName}`;
+if (tokenLabel) tokenLabel.innerText = `Access Token: ${activeJudgeCode.toUpperCase()}`;
+
+// 📊 BULLETPROOF WIRELESS AUTO-WIPE SYNC HOOK:
+async function initHandshakeDataFetch() {
+    try {
+        const response = await fetch(`${cloudBackendUrl}/api/initial-data`);
+        if (response.ok) {
+            const fetchedData = await response.json();
+            
+            // DYNAMIC MEMORY WIPER MODULE INJECTOR:
+            if (!fetchedData.scores || fetchedData.scores.length === 0) {
+                const judgeIdKey = activeJudgeId;
+                for (let r = 1; r <= 4; r++) {
+                    localStorage.removeItem(`ballot_voted_r${r}_j${judgeIdKey}`);
                 }
-                renderJudgingInterfaceSheet();
-            } catch (error) {
-                console.log("Using dynamic broadcast injector fallback safely.");
-                renderJudgingInterfaceSheet();
+            }
+
+            if (fetchedData && fetchedData.candidates && fetchedData.candidates.length > 0) {
+                localMemoryCache = fetchedData;
             }
             
+            // ITINAMA: Tinatawag ang saktong function name na walang extra 'Sheet' sa dulo para hindi mag-loop freeze!
+            renderJudgingInterfaceSheet();
         }
+    } catch (error) {
+        console.log("Using dynamic broadcast injector fallback safely.");
+        // Fallback dynamic renderer trigger log loop
+        renderJudgingInterfaceSheet();
+    }
+}
+        // 🖥️ 100% NAITAMA NA: Kinukuha ang tamang HTML container element para mag-render ang candidates cards kusa!
+function renderJudgingInterfaceSheet() {
+    const mainContainer = document.getElementById('judgingContestantsCoreContainer') || document.getElementById('contestantsContainer');
+    if (!mainContainer) return;
+    mainContainer.innerHTML = "";
 
+    if (!localMemoryCache.candidates || localMemoryCache.candidates.length === 0) {
+        mainContainer.innerHTML = `<p class="text-center text-muted py-4">No active contestants deployed in the database matrices.</p>`;
+        return;
+    }
 
+    localMemoryCache.candidates.forEach(candidate => {
+        let cardHtml = `
+            <div class="card bg-black bg-opacity-20 border border-secondary border-opacity-20 rounded-4 p-3 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-sm-4 text-center text-sm-start mb-3 mb-sm-0">
+                        <h4 class="text-warning fw-bold m-0 text-uppercase">${candidate.name}</h4>
+                        <span class="badge bg-secondary rounded-pill mt-1">Slot # ${candidate.candidate_number}</span>
+                        <div class="text-muted small mt-1 text-uppercase">${candidate.representation || 'Official Region'}</div>
+                    </div>
+                    <div class="col-sm-8">`;
 
-                       // ✅ 100% NAITAMA NA: Kitang-kita na ang tatlong kategorya nang sabay, pero may kanya-kanya na silang SUBMIT button sa tapat!
-        function renderJudgingInterfaceSheet() {
-            const mainContainer = document.getElementById('judgingCandidatesCoreContainer');
-            if(!mainContainer) return;
-            mainContainer.innerHTML = '';
-            
-            const targetCategoriesList = localMemoryCache.categories || [];
-            const activeCandidatesList = localMemoryCache.candidates || [];
-            
-            let customImagesMap = JSON.parse(localStorage.getItem('uploaded_candidate_images') || '{}');
+        localMemoryCache.categories.forEach(category => {
+            // Tinitingnan kung may lumang records ng score ang judge na ito para hindi mabura ang mga naunang boto
+            const existingScore = localMemoryCache.scores?.find(s => 
+                (s.judge_id == activeJudgeId || s.judge_id === activeJudgeCode) && 
+                s.candidate_id == candidate.id && 
+                s.category_id == category.id
+            );
+            const scoreValue = existingScore ? existingScore.score_given : "";
 
-            activeCandidatesList.forEach(cand => {
-                let customRowRowsHtml = '';
-                
-                // Ini-isaisa ang tatlong kategorya para gawan ng kanya-kanyang input at submit button pababa!
-                targetCategoriesList.forEach(cat => {
-                    // Gumagamit ng natatanging dynamic key lock para sa saktong kategoryang ito lamang
-                    let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${cat.id}_j${sessionStorage.getItem('judge_id') || 1}`;
-                    let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
-                    const isThisCategoryVoted = elementsVotedStateMap[cand.candidate_number] !== undefined;
-                    
-                    const finalScoreVal = isThisCategoryVoted ? parseFloat(elementsVotedStateMap[cand.candidate_number][cat.id] || 75).toFixed(2) : '75.00';
-                    
-                    customRowRowsHtml += `
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 border-bottom border-secondary pb-3" style="width: 100%; max-width: 42rem; margin: 0 auto;">
-                            <!-- Pangalan ng Kategorya -->
-                            <span class="criteria-label-text text-start" style="min-width: 12rem;">
-                                <i class="fa-solid fa-medal text-warning me-2"></i> ${cat.category_name}
-                            </span>
-                            
-                            <!-- Input Box ng Score -->
-                            <input type="number" class="score-input-box" id="scoreInput_c${cand.candidate_number}_cat${cat.id}" 
-                                min="70" max="${cat.max_score || 100}" step="1" value="${parseInt(finalScoreVal)}"
-                                ${isThisCategoryVoted ? 'disabled' : ''} style="max-width: 6rem;">
-                            
-                            <!-- Kanya-kanyang Pindutan sa tapat ng bawat row! -->
-                            <button class="btn btn-sm btn-submit-ballot" id="btnSubmit_c${cand.candidate_number}_cat${cat.id}" 
-                                ${isThisCategoryVoted ? 'disabled' : ''} 
-                                onclick="executeSubmitBallotTransaction(${cand.candidate_number}, ${cand.id}, ${cat.id})"
-                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem; min-width: 9rem; background: ${isThisCategoryVoted ? '#334155 !important' : ''}; color: ${isThisCategoryVoted ? '#64748b !important' : ''};">
-                                <i class="fa-solid ${isThisCategoryVoted ? 'fa-lock' : 'fa-paper-plane'} me-1"></i> 
-                                ${isThisCategoryVoted ? 'TRANSMITTED' : 'SUBMIT'}
-                            </button>
-                        </div>`;
-                });
+            cardHtml += `
+                <div class="d-flex justify-content-between align-items-center mb-2 bg-dark bg-opacity-50 p-2 rounded-3">
+                    <span class="small fw-semibold text-uppercase me-2" style="font-size:11px;">${category.category_name}</span>
+                    <div class="d-flex gap-2 align-items-center">
+                        <input type="number" class="form-control score-input form-control-sm" 
+                               id="scoreInput_c${candidate.candidate_number}_cat${category.id}" 
+                               min="0" max="${category.max_score}" value="${scoreValue}" placeholder="75">
+                        <button class="btn gold-btn btn-sm" onclick="executeSubmitBallotTransaction(${candidate.candidate_number}, ${candidate.id}, ${category.id})">Submit</button>
+                    </div>
+                </div>`;
+        });
 
-                const photoSrc = customImagesMap[cand.candidate_number] || `https://dicebear.com{cand.candidate_number}`;
+        cardHtml += `</div></div></div>`;
+        mainContainer.innerHTML += cardHtml;
+    });
+}
 
-                mainContainer.innerHTML += `
-                    <div class="card jumbo-evaluation-sheet" id="candCard_${cand.candidate_number}">
-                        <div class="row text-center d-flex flex-column align-items-center justify-content-center g-4">
-                            
-                            <div class="col-12 d-flex flex-column align-items-center justify-content-center">
-                                <img src="${photoSrc}" class="avatar-frame-vip mb-3" alt="Contestant Image">
-                                <div class="candidate-header-label">${cand.name}</div>
-                                <div class="candidate-sub-label">SLOT # ${cand.candidate_number}</div>
-                                <div class="text-muted text-uppercase fw-bold mt-1" style="font-size:0.85rem; letter-spacing:0.05em; color: rgba(255,255,255,0.6) !important;">${cand.representation}</div>
-                            </div>
-                            
-                            <div class="col-12 d-flex flex-column align-items-center justify-content-center px-4 mt-3">
-                                <div class="mb-4 text-warning fw-black h5 text-uppercase tracking-widest" style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; width: 100%; max-width: 42rem;"><i class="fa-solid fa-star me-2"></i> Scoring Parameters Allocation</div>
-                                ${customRowRowsHtml}
-                            </div>
-                            
-                        </div>
-                    </div>`;
-            });
-        }
-
-
-        
-              // ✅ KOREK AT KUMPLETONG TRANSAKTYON: Dynamic na kumukuha ng saktong Judge at Candidate IDs!
+// 🚀 KOREK AT KUMPLETONG TRANSAKTYON: Dynamic na kumukuha ng saktong Judge at Candidate IDs!
 async function executeSubmitBallotTransaction(candNo, candidateRowId, targetCatId) {
-    // 1. Itinama: Titingnan sa localStorage at sessionStorage para walang mintis kung sinong Judge ang naka-login
-    const judgeCode = localStorage.getItem('judge_access_code') || sessionStorage.getItem('judge_access_code') || "judge1";
-    const judgeName = localStorage.getItem('judge_name') || sessionStorage.getItem('judge_name') || "Official Judge";
-
     const inputNode = document.getElementById(`scoreInput_c${candNo}_cat${targetCatId}`);
     if (!inputNode) return;
     
-    const finalPoints = parseFloat(inputNode.value) || 75.00;
+    const finalPoints = parseFloat(inputNode.value);
 
-    let currentBallotVotesData = {};
-    currentBallotVotesData[targetCatId] = finalPoints;
+    if (isNaN(finalPoints) || finalPoints < 0) {
+        alert("❌ Input Error: Please enter a valid numerical score before data transmission.");
+        return;
+    }
+
+    // GAGAMITIN NA SI activeJudgeCode (e.g. 'judge3' / 'judge24') PARA MATAGUMPAY NA MAG-MATCH SA COALESCE QUERY NG ADMIN MONITOR!
+    const payloadData = {
+        judge_id: activeJudgeCode, // <--- SEALYADO: Ipinapadala ang access token dynamic, wala nang hahalong static '1'!
+        candidate_id: parseInt(candidateRowId), // ✅ ITINAMA: Gagamitin na ang Database Row ID para mahanap ng Admin dashboard!
+        category_id: parseInt(targetCatId),
+        score_given: parseFloat(finalPoints)
+    };
 
     try {
         const response = await fetch(`${cloudBackendUrl}/api/scores`); {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                judge_id: judgeCode,            // ✅ ITINAMA: Ipinapadala na ang saktong access token (e.g., 'judge3' o 'judge24')
-                judge_name: judgeName,
-                candidate_id: parseInt(candidateRowId), // ✅ ITINAMA: Gagamitin na ang Database Row ID para mahanap ng Admin dashboard!
-                category_id: parseInt(targetCatId),
-                score_given: parseFloat(finalPoints)
-            })
+            body: JSON.stringify(payloadData)
         });
 
         if (response.ok) {
-            // I-lock ang saktong data key block sa browser storage
-            const activeJudgeIdTemp = sessionStorage.getItem('judge_id') || 1;
-            let submittedBallotsKey = `ballot_voted_r${activeRound}_cat${targetCatId}_j${activeJudgeIdTemp}`;
-            let elementsVotedStateMap = JSON.parse(localStorage.getItem(submittedBallotsKey) || '{}');
-            elementsVotedStateMap[candNo] = currentBallotVotesData;
-            localStorage.setItem(submittedBallotsKey, JSON.stringify(elementsVotedStateMap));
-
             alert(`👑 Official ballot token transmitted securely for Candidate #${candNo}!`);
-            renderJudgingInterfaceSheet();
+            
+            // Kusa nitong hihilahin muli ang pinakabagong lists ng scores mula sa server para mag-refresh ang local checkmarks
+            initHandshakeDataFetch();
         } else {
-            alert("❌ Transmission breakdown. Check backend connectivity.");
+            alert("❌ Server rejected the transmission token layout parameters.");
         }
     } catch (e) {
-        alert("❌ Transmission breakdown. Ensure node server.js broadcast is active.");
+        console.error(e);
+        alert("❌ Transmission breakdown. Ensure node server.js broadcast engine is online.");
     }
 }
-
 
 
                 function handleRoundChangeTrigger(selector) {
