@@ -242,7 +242,7 @@ async function executeSubmitBallotTransaction(candNo, candidateRowId, targetCatI
     currentBallotVotesData[targetCatId] = finalPoints;
 
     try {
-        const response = await fetch(`${cloudBackendUrl}/api/scores`, {
+        const response = await fetch(`${cloudBackendUrl}/api/scores`); {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
